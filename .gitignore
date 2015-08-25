@@ -1,0 +1,17 @@
+*.swp
+target/*
+lib*
+*.orig
+*jar
+.idea
+.lein-failures
+dc-sdk.log
+.classpath
+.lein-deps-sum
+.lein-plugins/
+.project
+.lein-env
+.nrepl-port
+.lein-repl-history
+resources/Essential_Stock_File.xls
+resources/public/js/out/*
