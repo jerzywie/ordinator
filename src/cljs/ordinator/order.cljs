@@ -1,7 +1,8 @@
 (ns ordinator.order
   (:require [reagent.core :as r]
             [cljs.core.async :refer [chan <! close!]]
-            [cljs-http.client :as http])
+            [cljs-http.client :as http]
+            [clojure.string :as s])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (defn tocurrency
@@ -65,51 +66,57 @@
           (for [line @member-order]
             [render-order-line line]))]])
 
-(defn order-input
-  [{:keys [id placeholder val]}]
-  (let [changed "blah"]
-   (fn [props]
-      [:div
-       [:label {:for id} id]
-       [:input (merge props
-                      {:type "text"
-                       :placeholder placeholder
-                       :value @val
-                       :on-change #(reset! val (-> % .-target .-value))
-                       :on-blur (prn id ": " @val)})]])))
-
-
-(defn order-line-input
-  []
-  (let [code (r/atom "")
-        quantity (r/atom 0)
-        description (r/atom "")
-        ]
-   [:div
-    [order-input {:id "code"
-                  :placeholder "code?"
-                  :val code
-                  }]
-    [order-input {:id "quantity"
-                  :placeholder "albany units"
-                  :val quantity}]]
-   [:div
-    [:span @code]]))
-
 (defn order-input-field
-  [])
+  [id placeholder on-change]
+  [:div
+   [:label {:for id} (s/capitalize id)]
+   [:input {:type "text"
+            :id id
+            :placeholder placeholder
+            :on-change (fn [e]
+                         (let [val (.-target.value e)]
+                           (if on-change (on-change val))))}]])
+
+(defn order-readonly-field
+  [id title value]
+  [:div
+   [:label {:for id} title]
+   [:span value]])
 
 (defn order-item-component
   []
-  (let [{:keys [code description price origin packsize vat albanypack splits? quantity estcost]} @order-item]
-    ))
+  (let [{:keys [code description price origin packsize vat albanypack albanypacksize splits? quantity estcost]
+         :as order-line} @order-item
+         code-onchange (fn [code] (let [codekey (-> code s/trim s/lower-case keyword)
+                                    itemdata (codekey @catalog)]
+                                (prn "code" code)
+                                (prn "itemdata" itemdata)
+                                (reset! order-item itemdata)))
+         quantity-onchange (fn [qty] (let [estcost (* qty price)]
+                                    (prn "price" price)
+                                    (prn "qty" qty)
+                                    (prn "estcost" estcost)
+                                    (swap! order-item assoc :quantity qty :estcost estcost)
+                                    (prn @order-item)))]
+    [:div
+     [:div
+      [:span
+       [order-input-field "code" "code?" code-onchange]
+       [order-readonly-field "packsize" "Pack size" packsize]
+       [order-readonly-field "apacksize" "Albany pack size" albanypacksize]
+       [order-input-field "quantity" "quantity in Albany units" quantity-onchange]
+       [order-readonly-field "estcost" "Estimated cost" estcost]]]
+     [:div
+      [:div origin]
+      [:div description]]]))
+
 
 (defn render-order-page []
   (get-catalogue! catalog)
   [:div
    [:div [:h2 "Your current order"]
     [:div [:h3 "Enter new item"]
-     [order-line-input]]]
+     [order-item-component]]]
    [:div
     [:h3 "Items"]
     [render-order]]

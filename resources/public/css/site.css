@@ -641,3 +641,7 @@ hr {
 		margin: 130px auto 40px auto;
 	}
 }
+
+input, label {
+    display:block;
+}
