@@ -1,5 +1,6 @@
 (ns ordinator.catalogue
-  (:use [dk.ative.docjure.spreadsheet] :reload-all))
+  (:use [dk.ative.docjure.spreadsheet] :reload-all)
+  (:require [clojure.string :as s]))
 
 (def cols {:B :code :C :description :D :origin :F :packsize :G :price :H :vat})
 
@@ -20,7 +21,9 @@
   (let [raw-data (read-cat-file)]
     (->> raw-data
          (drop 1)
-         (reduce (fn [m {:keys [code] :as line}] (assoc m code line)) {})
+         (reduce (fn [m {:keys [code] :as line}]
+                   (let [codekey (-> code s/trim s/lower-case)]
+                     (assoc m codekey line))) {})
          (reset! catalogue-data))))
 
 (defn get-catalogue [] @catalogue-data)
