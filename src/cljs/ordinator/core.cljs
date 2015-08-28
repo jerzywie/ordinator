@@ -22,9 +22,7 @@
    [:div [:a {:href "#/"} "go to the home page"]]])
 
 (defn order-page []
-  [:div [:h2 "Your order"]
-   [order/render-order]
-   [:div [:a {:href "#/"} "go to the home page"]]])
+  [order/render-order-page])
 
 (defn todo-page []
   (todo/todo-app))

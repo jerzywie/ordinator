@@ -24,7 +24,8 @@
                  [prone "0.8.2"]
                  [reagent "0.5.0"]
                  [reagent-utils "0.1.5"]
-                 [secretary "1.2.3"]]
+                 [secretary "1.2.3"]
+                 [cljs-http "0.1.37"]]
 
   :exclusions [commons-logging
                log4j

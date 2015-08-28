@@ -13,5 +13,6 @@ dc-sdk.log
 .lein-env
 .nrepl-port
 .lein-repl-history
+figwheel_server.log
 resources/Essential_Stock_File.xls
 resources/public/js/out/*
