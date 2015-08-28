@@ -68,7 +68,7 @@
 
 (defn order-input-field
   [id placeholder on-change]
-  [:div
+  [:div.orderinput
    [:label {:for id} (s/capitalize id)]
    [:input {:type "text"
             :id id
@@ -79,7 +79,7 @@
 
 (defn order-readonly-field
   [id title value]
-  [:div
+  [:div.orderinput
    [:label {:for id} title]
    [:span value]])
 
@@ -98,15 +98,15 @@
                                     (prn "estcost" estcost)
                                     (swap! order-item assoc :quantity qty :estcost estcost)
                                     (prn @order-item)))]
-    [:div
-     [:div
+    [:div.container
+     [:div.clearfix
       [:span
        [order-input-field "code" "code?" code-onchange]
        [order-readonly-field "packsize" "Pack size" packsize]
        [order-readonly-field "apacksize" "Albany pack size" albanypacksize]
        [order-input-field "quantity" "quantity in Albany units" quantity-onchange]
        [order-readonly-field "estcost" "Estimated cost" estcost]]]
-     [:div
+     [:div.clearfix
       [:div origin]
       [:div description]]]))
 
