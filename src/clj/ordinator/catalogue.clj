@@ -15,14 +15,26 @@
         sheet (select-sheet stock-sheet-name wb)]
     (select-columns cols sheet)))
 
-;TODO add Albany units and splittable flag
+(defn get-units [packsize]
+  (let [regx #"^(\d+)(\s*([*x]).*)$"
+        sixpack (s/trim packsize)
+        matches (re-seq regx sixpack)]
+    (if-let [matches (first matches)]
+      {:unitsperpack (Integer. (second matches))
+       :unit (str "1" (nth matches 2))
+       :splits? (= (nth matches 3) "*")}
+      {:unitsperpack 1
+       :unit sixpack
+       :splits? false})))
+
 (defn update-catalogue
   []
   (let [raw-data (read-cat-file)]
     (->> raw-data
          (drop 1)
+         (map (fn [{:keys [packsize] :as m}] (merge m (get-units packsize))))
          (reduce (fn [m {:keys [code] :as line}]
-                   (let [codekey (-> code s/trim s/lower-case)]
+                   (let [codekey (-> code s/trim s/lower-case keyword)]
                      (assoc m codekey line))) {})
          (reset! catalogue-data))))
 

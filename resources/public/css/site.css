@@ -143,9 +143,22 @@ input, label {
     display:block;
 }
 
+input#code {
+    width: 50px;
+}
+
+input#quantity {
+    width: 50px;
+}
+
+div > label {
+    font-style: italic;
+}
+
 .orderinput {
     float:left;
-    margin-right:20px;
+    margin-left:5px;
+    margin-right:10px;
 }
 
 .clearfix:after {
