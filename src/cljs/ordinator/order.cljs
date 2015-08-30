@@ -109,7 +109,7 @@
   []
   (let [{:keys [code description origin packsize price vat unit unitsperpack splits? quantity estcost]
          :as order-line} (calc-order-item)
-         submit-enabled (and (> 0 price) (> 0 quantity))
+         submit-enabled (and (> price 0) (> quantity 0))
          code-onchange (fn [code] (let [codekey (-> code s/trim s/lower-case keyword)
                                        itemdata (assoc (codekey @catalog) :estcost nil :quantity nil)]
                                    (reset! order-item itemdata)
@@ -117,9 +117,8 @@
          quantity-onchange (fn [qty] (let [estcost (* (/ qty unitsperpack) price)]
                                       (swap! order-item assoc :quantity qty :estcost estcost)
                                       (prn "qty o/c" @order-item)))
-         add-onclick (fn [] (let [result (swap! member-order conj @order-item)]
-                             (prn "add o/c" result)))]
-    (prn "o-i-c!")
+         add-onclick (fn [] (swap! member-order conj @order-item))]
+
     [:div.container
      [:div.clearfix
       [:span
@@ -132,7 +131,7 @@
        [order-input-field "quantity" "in units" quantity-onchange]
        [order-readonly-field "packsordered" "Packs ordered" (tonumber (/ quantity unitsperpack))]
        [order-readonly-field "estcost" "Estimated cost" (toprice estcost)]
-       [submit-order "add" "Add" (and (> price 0) (> quantity 0)) submit-enabled add-onclick]]]
+       [submit-order "add" "Add" submit-enabled add-onclick]]]
      [:div.clearfix
       [:span
        [:div.orderinput
