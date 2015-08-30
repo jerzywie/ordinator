@@ -4,7 +4,7 @@
 
 (def cols {:B :code :C :description :D :origin :F :packsize :G :price :H :vat})
 
-(def raw-cat-file "resources/Essential_Stock_File_test.xls")
+(def raw-cat-file "resources/Essential_Stock_File.xls")
 (def stock-sheet-name "Stock_Full")
 
 (def catalogue-data (atom {}))

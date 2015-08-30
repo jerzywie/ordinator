@@ -16,19 +16,24 @@
 
 (def order-item (r/atom nil))
 
-(def member-order (r/atom [{:code "X666P"
-                            :description "loo-rolls"
-                            :case-size "36x1"
-                            :unit-cost 8.43
-                            :memdes 36
-                            :memcost 8.43}
-                           {:code "V445P"
-                            :description "Chopped tinned tomatoes"
-                            :case-size "12x400g"
-                            :unit-cost 7.56
-                            :memdes 24
-                            :memcost 15.12}]))
+(def member-order (r/atom []))
 
+
+(defn tonumber
+  ([v curr]
+    (cond
+     (nil? v) ""
+     (js/isNaN v) ""
+     v (gstring/format "%s%0.2f" curr v)
+     :else ""))
+  ([v]
+   (tonumber v "")))
+
+(defn toprice [p]
+  (tonumber p "£"))
+
+(defn addvat [v]
+  (if (= v "Z") " +VAT" ""))
 
 (defn get-catalogue! [result]
   "Get catalogue data.
@@ -38,7 +43,31 @@
     (let [{:keys [status body] :as response} (<! (http/get "/catalogue"))]
       (reset! result body))))
 
-(defn add-order-line [])
+(defn order-input-field
+  [id placeholder on-change]
+  [:div.orderinput
+   [:label {:for id} (s/capitalize id)]
+   [:input {:type "text"
+            :id id
+            :placeholder placeholder
+            :on-change (fn [e]
+                         (let [val (.-target.value e)]
+                           (if on-change (on-change val))))}]])
+
+(defn order-readonly-field
+  [id title value]
+  [:div.orderinput
+   [:label {:for id} title]
+   [:span.orderinput value]])
+
+(defn submit-order
+  [id title enabled on-click]
+  [:div.orderinput.ordersubmit
+   [:input.submit {:type "submit"
+                   :id id
+                   :value title
+                   :disabled (not enabled)
+                   :on-click (fn [e] (if on-click (on-click)))}]])
 
 (defn render-order-line [{:keys [code description case-size unit-cost memdes memcost]}]
   [:tr
@@ -68,59 +97,47 @@
           (for [line @member-order]
             [render-order-line line]))]])
 
-(defn order-input-field
-  [id placeholder on-change]
-  [:div.orderinput
-   [:label {:for id} (s/capitalize id)]
-   [:input {:type "text"
-            :id id
-            :placeholder placeholder
-            :on-change (fn [e]
-                         (let [val (.-target.value e)]
-                           (if on-change (on-change val))))}]])
-
-(defn order-readonly-field
-  [id title value]
-  [:div.orderinput
-   [:label {:for id} title]
-   [:span value]])
-
-(defn toprice [p]
-  (cond
-   (nil? p) ""
-   (js/isNaN p) ""
-   p (gstring/format "£%0.2f" p)
-   :else ""))
-
-(defn addvat [v]
-  (if (= v "Z") " +VAT" ""))
+(defn calc-order-item
+  []
+  (let [{:keys [code description origin packsize price vat unit unitsperpack splits? quantity estcost]
+         :as order-line} @order-item]
+    (when (and (> price 0) (nil? estcost))
+      (assoc order-line :estcost (* (/ quantity unitsperpack) price)))
+    order-line))
 
 (defn order-item-component
   []
   (let [{:keys [code description origin packsize price vat unit unitsperpack splits? quantity estcost]
-         :as order-line} @order-item
+         :as order-line} (calc-order-item)
+         submit-enabled (and (> 0 price) (> 0 quantity))
          code-onchange (fn [code] (let [codekey (-> code s/trim s/lower-case keyword)
-                                       itemdata (codekey @catalog)]
-                                   (reset! order-item itemdata)))
+                                       itemdata (assoc (codekey @catalog) :estcost nil :quantity nil)]
+                                   (reset! order-item itemdata)
+                                   (prn "code o/c" @order-item)))
          quantity-onchange (fn [qty] (let [estcost (* (/ qty unitsperpack) price)]
                                       (swap! order-item assoc :quantity qty :estcost estcost)
-                                      (prn @order-item)))]
+                                      (prn "qty o/c" @order-item)))
+         add-onclick (fn [] (let [result (swap! member-order conj @order-item)]
+                             (prn "add o/c" result)))]
+    (prn "o-i-c!")
     [:div.container
      [:div.clearfix
       [:span
        [order-input-field "code" "code?" code-onchange]
        [order-readonly-field "packsize" "Pack size" packsize]
+       [order-readonly-field "packprice" "Pack price" (str (toprice price) (addvat vat))]
        [order-readonly-field "unit" "Albany unit" unit]
        [order-readonly-field "unisperpack" "Units/pack" unitsperpack]
        [order-readonly-field "unitprice" "Price/unit" (toprice (/ price unitsperpack))]
-       [order-input-field "quantity" "quantity in Albany units" quantity-onchange]
-       [order-readonly-field "estcost" "Estimated cost" (toprice estcost)]]]
+       [order-input-field "quantity" "in units" quantity-onchange]
+       [order-readonly-field "packsordered" "Packs ordered" (tonumber (/ quantity unitsperpack))]
+       [order-readonly-field "estcost" "Estimated cost" (toprice estcost)]
+       [submit-order "add" "Add" (and (> price 0) (> quantity 0)) submit-enabled add-onclick]]]
      [:div.clearfix
       [:span
        [:div.orderinput
-        [:div origin]
-        [:div description]]
-       [order-readonly-field "packprice" "Pack price" (str (toprice price) (addvat vat))]]]]))
+        [:span.origin.orderinput origin]
+        [:span.description.orderinput description]]]]]))
 
 
 (defn render-order-page []

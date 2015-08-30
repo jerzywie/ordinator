@@ -1,40 +1,27 @@
-body {
-  font-family: 'Helvetica Neue', Verdana, Helvetica, Arial, sans-serif;
-
-  max-width: 800px;
-  margin: 0 auto;
-  padding-top: 72px;
-  -webkit-font-smoothing: antialiased;
-  font-size: 1.125em;
-  color: #333;
-  line-height: 1.5em;
-}
-
+@charset "utf-8";
 
 body {
-    font-family:Verdana, Arial, Helvetica, sans-serif;
+    max-width: 800px;
+    font: 14px 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size:12px;
     font-weight:normal
-}
-
-body {
-	font: 14px 'Helvetica Neue', Helvetica, Arial, sans-serif;
-	line-height: 1.5em;
-	background: #eaeaea;
-	/* background: #eaeaea url('bg.png'); */
-	color: #4d4d4d;
-	margin: 0 auto;
-	-webkit-font-smoothing: antialiased;
-	-moz-font-smoothing: antialiased;
-	-ms-font-smoothing: antialiased;
-	-o-font-smoothing: antialiased;
-	font-smoothing: antialiased;
+    line-height: 1.5em;
+    background: #eaeaea;
+    /* background: #eaeaea url('bg.png'); */
+    color: #4d4d4d;
+    margin: 0 auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-font-smoothing: antialiased;
+    -ms-font-smoothing: antialiased;
+    -o-font-smoothing: antialiased;
+    font-smoothing: antialiased;
 }
 
 
 h1, h2, h3 {
   color: #000;
 }
+
 h1 {
   font-size: 2.5em
 }
@@ -55,7 +42,6 @@ a {
 a:hover {
   text-decoration: underline;
 }
-
 
 .order,.balance {
     border-collapse:collapse
@@ -79,7 +65,8 @@ a:hover {
 }
 
 .order tr:nth-child(odd),.balance tr:nth-child(odd) {
-    background:#EAF4FF}
+    background:#EAF4FF
+}
 
 table.order {
     width:100%
@@ -99,7 +86,6 @@ div.balance {
     font-weight:bold
 }
 
-@charset "utf-8";
 
 button {
 	margin: 0;
@@ -122,23 +108,6 @@ input[type="checkbox"] {
   outline: none;
 }
 
-
-@media (min-width: 899px) {
-	.learn-bar {
-		width: auto;
-		margin: 0 0 0 300px;
-	}
-
-	.learn-bar > .learn {
-		left: 8px;
-	}
-
-	.learn-bar #todoapp {
-		width: 550px;
-		margin: 130px auto 40px auto;
-	}
-}
-
 input, label {
     display:block;
 }
@@ -155,10 +124,26 @@ div > label {
     font-style: italic;
 }
 
+.origin {
+    font-style: italic;
+    margin-right:1em;
+    font-weight: bold;
+}
+
+.description {
+    font-weight: bold;
+}
+
 .orderinput {
     float:left;
+    margin-top:3px;
+    margin-bottom:3px;
     margin-left:5px;
     margin-right:10px;
+}
+
+span.orderinput {
+    margin-top:3px;
 }
 
 .clearfix:after {
@@ -168,6 +153,6 @@ div > label {
 }
 
 .container {
-  border: solid 1px black;
-  background: #ccc;
+    border: solid 1px black;
+    background: #ccc;
 }
