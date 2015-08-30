@@ -69,14 +69,15 @@
                    :disabled (not enabled)
                    :on-click (fn [e] (if on-click (on-click)))}]])
 
-(defn render-order-line [{:keys [code description case-size unit-cost memdes memcost]}]
+(defn render-order-line [{:keys [code origin description packsize price unit quantity estcost]}]
   [:tr
    [:td code]
-   [:td description]
-   [:td case-size]
-   [:td.rightjust (tocurrency unit-cost)]
-   [:td.rightjust memdes]
-   [:td.rightjust (tocurrency memcost)]
+   [:td (s/trim (str origin " " description))]
+   [:td packsize]
+   [:td.rightjust (tonumber price)]
+   [:td unit]
+   [:td.rightjust quantity]
+   [:td.rightjust (tonumber estcost)]
    ])
 
 (defn render-totals [])
@@ -89,10 +90,11 @@
      [:tr
       [:th "Code"]
       [:th "Item"]
-      [:th "Unit Q'ty"]
-      [:th "Unit Price"]
-      [:th "Pref Q'ty"]
-      [:th "Est price"]]]
+      [:th "Pack size"]
+      [:th "Pack Price"]
+      [:th "Albany Unit"]
+      [:th "Quantity"]
+      [:th "Est cost"]]]
     (into [:tbody]
           (for [line @member-order]
             [render-order-line line]))]])
