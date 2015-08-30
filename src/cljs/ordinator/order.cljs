@@ -16,7 +16,7 @@
 
 (def order-item (r/atom nil))
 
-(def member-order (r/atom []))
+(def member-order (r/atom nil))
 
 
 (defn tonumber
@@ -97,7 +97,7 @@
       [:th "Est cost"]]]
     (into [:tbody]
           (for [line @member-order]
-            [render-order-line line]))]])
+            [render-order-line (second line)]))]])
 
 (defn calc-order-item
   []
@@ -119,7 +119,9 @@
          quantity-onchange (fn [qty] (let [estcost (* (/ qty unitsperpack) price)]
                                       (swap! order-item assoc :quantity qty :estcost estcost)
                                       (prn "qty o/c" @order-item)))
-         add-onclick (fn [] (swap! member-order conj @order-item))]
+         add-onclick (fn [] (let [code (-> (:code @order-item) s/lower-case keyword)]
+                             (swap! member-order assoc code @order-item)
+                             (reset! order-item nil)))]
 
     [:div.container
      [:div.clearfix
