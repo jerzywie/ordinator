@@ -44,12 +44,13 @@
       (reset! result body))))
 
 (defn order-input-field
-  [id placeholder on-change]
+  [id placeholder value on-change]
   [:div.orderinput
    [:label {:for id} (s/capitalize id)]
    [:input {:type "text"
             :id id
             :placeholder placeholder
+            :value value
             :on-change (fn [e]
                          (let [val (.-target.value e)]
                            (if on-change (on-change val))))}]])
@@ -109,13 +110,14 @@
 
 (defn order-item-component
   []
-  (let [{:keys [code description origin packsize price vat unit unitsperpack splits? quantity estcost]
+  (let [{:keys [code codeval description origin packsize price vat unit unitsperpack splits? quantity estcost]
          :as order-line} (calc-order-item)
          submit-enabled (and (> price 0) (> quantity 0))
-         code-onchange (fn [code] (let [codekey (-> code s/trim s/lower-case keyword)
-                                       itemdata (assoc (codekey @catalog) :estcost nil :quantity nil)]
-                                   (reset! order-item itemdata)
-                                   (prn "code o/c" @order-item)))
+         code-onchange (fn [codeval]
+                         (let [codekey (-> codeval s/trim s/lower-case keyword)
+                               itemdata (assoc (codekey @catalog) :estcost nil :quantity nil :codeval codeval)]
+                           (reset! order-item itemdata)
+                           (prn "code o/c" @order-item)))
          quantity-onchange (fn [qty] (let [estcost (* (/ qty unitsperpack) price)]
                                       (swap! order-item assoc :quantity qty :estcost estcost)
                                       (prn "qty o/c" @order-item)))
@@ -126,13 +128,13 @@
     [:div.container
      [:div.clearfix
       [:span
-       [order-input-field "code" "code?" code-onchange]
+       [order-input-field "code" "code?" codeval code-onchange]
        [order-readonly-field "packsize" "Pack size" packsize]
        [order-readonly-field "packprice" "Pack price" (str (toprice price) (addvat vat))]
        [order-readonly-field "unit" "Albany unit" unit]
        [order-readonly-field "unisperpack" "Units/pack" unitsperpack]
        [order-readonly-field "unitprice" "Price/unit" (toprice (/ price unitsperpack))]
-       [order-input-field "quantity" "in units" quantity-onchange]
+       [order-input-field "quantity" "in units" quantity quantity-onchange]
        [order-readonly-field "packsordered" "Packs ordered" (tonumber (/ quantity unitsperpack))]
        [order-readonly-field "estcost" "Estimated cost" (toprice estcost)]
        [submit-order "add" "Add" submit-enabled add-onclick]]]
