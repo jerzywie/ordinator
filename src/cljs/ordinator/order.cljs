@@ -18,6 +18,13 @@
 
 (def member-order (r/atom nil))
 
+(defn code->key
+  [code]
+  (-> code s/trim s/lower-case keyword))
+
+(defn delete
+  [code]
+  (swap! member-order dissoc code))
 
 (defn tonumber
   ([v curr]
@@ -79,6 +86,8 @@
    [:td unit]
    [:td.rightjust quantity]
    [:td.rightjust (tonumber estcost)]
+   [:td
+    [:button.destroy {:on-click #(delete (code->key code))}]]
    ])
 
 (defn render-totals [])
@@ -95,10 +104,10 @@
       [:th "Pack Price"]
       [:th "Albany Unit"]
       [:th "Quantity"]
-      [:th "Est cost"]]]
+      [:th "Est cost"]
+      [:th ""]]]
     (into [:tbody]
-          (for [line @member-order]
-            [render-order-line (second line)]))]])
+          (map render-order-line (vals @member-order)))]])
 
 (defn calc-order-item
   []
@@ -114,14 +123,14 @@
          :as order-line} (calc-order-item)
          submit-enabled (and (> price 0) (> quantity 0))
          code-onchange (fn [codeval]
-                         (let [codekey (-> codeval s/trim s/lower-case keyword)
+                         (let [codekey (code->key codeval)
                                itemdata (assoc (codekey @catalog) :estcost nil :quantity nil :codeval codeval)]
                            (reset! order-item itemdata)
                            (prn "code o/c" @order-item)))
          quantity-onchange (fn [qty] (let [estcost (* (/ qty unitsperpack) price)]
                                       (swap! order-item assoc :quantity qty :estcost estcost)
                                       (prn "qty o/c" @order-item)))
-         add-onclick (fn [] (let [code (-> (:code @order-item) s/lower-case keyword)]
+         add-onclick (fn [] (let [code (code->key (:code @order-item))]
                              (swap! member-order assoc code @order-item)
                              (reset! order-item nil)))]
 
