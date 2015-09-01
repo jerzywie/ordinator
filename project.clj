@@ -1,7 +1,8 @@
 (defproject ordinator "1.0.0-SNAPSHOT"
   :description "Ordinator service"
 
-  :dependencies [[ch.qos.logback/logback-classic "1.1.3"]
+  :dependencies [[org.clojure/core.cache "0.6.4"]
+                 [ch.qos.logback/logback-classic "1.1.3"]
                  [cheshire "5.4.0"]
                  [clj-http "1.1.2"]
                  [clj-time "0.9.0"]
@@ -15,17 +16,31 @@
                  [org.clojure/clojure "1.7.0"]
                  [org.clojure/tools.logging "0.3.1"]
                  [ring/ring-json "0.3.1"]
-                 [ring-middleware-format "0.5.0"]
+                 [ring-middleware-format "0.5.0"
+                  :exclusions [org.clojure/clojure
+                               commons-logging
+                               log4j
+                               org.clojure/core.cache]]
                  [dk.ative/docjure "1.6.0"]
                  [cljsjs/react "0.13.3-1"]
                  [hiccup "1.0.5"]
+                 [com.cemerick/friend "0.2.1"]
                  [org.clojure/clojurescript "0.0-3308" :scope "provided"]
-                 [org.clojure/core.async "0.1.346.0-17112a-alpha"]
+                 [org.clojure/core.async "0.1.346.0-17112a-alpha"
+                  :exclusions [org.clojure/clojure
+                               commons-logging
+                               log4j
+                               org.clojure/core.cache]]
                  [prone "0.8.2"]
                  [reagent "0.5.0"]
                  [reagent-utils "0.1.5"]
                  [secretary "1.2.3"]
-                 [cljs-http "0.1.37"]]
+                 [cljs-http "0.1.37"
+                  :exclusions [org.clojure/clojure
+                               commons-logging
+                               log4j
+                               org.clojure/core.cache]]
+                 [com.cemerick/friend "0.2.1"]]
 
   :exclusions [commons-logging
                log4j
@@ -34,7 +49,7 @@
   :plugins [[lein-environ "1.0.0"]
             [lein-release "1.0.5"]
             [lein-ring "0.8.12"]
-            [lein-asset-minifier "0.2.2"]]
+            [lein-asset-minifier "0.2.3"]]
 
   :source-paths ["src/clj" "src/cljs"]
 
@@ -92,7 +107,11 @@
                                   [junit "4.12"]
                                   [midje "1.6.3"]
                                   [rest-cljer "0.1.20"]
-                                  [lein-figwheel "0.3.7"]
+                                  [lein-figwheel "0.3.7"
+                                   :exclusions [org.clojure/clojure
+                                                commons-logging
+                                                log4j
+                                                org.clojure/core.cache]]
                                   [org.clojure/tools.nrepl "0.2.10"]]
 
                    :plugins [[lein-kibit "0.0.8"]
