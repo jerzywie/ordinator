@@ -14,7 +14,7 @@
 ;; Views
 
 (defn home-page []
-  [:div [:h2 "Welcome to Ordinator"]
+  [:div [:h2 "Welcome to Ordinator " (login/get-username)]
    [:div [:a {:href "#/order"} "View your order"]]
    [:div [:a {:href "#/about"} "go to about page"]]
    [:div [:a {:href "#/todo"} "go to to-do page"]]])

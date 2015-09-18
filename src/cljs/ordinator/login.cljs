@@ -15,6 +15,16 @@
   []
   (not (nil? @user)))
 
+(defn get-username
+  []
+  (when (logged-in?)
+    (:username @user)))
+
+(defn has-role?
+  [role]
+  (when (logged-in?)
+    (some #{role} (:roles @user))))
+
 (defn do-login! []
   "Post login creds"
   (go

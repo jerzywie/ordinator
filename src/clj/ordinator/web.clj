@@ -65,13 +65,13 @@
        [] (page-frame dev-mode?))
 
   (GET "/login"
-       [] (json-auth/handle-session {:request-method :get}))
+       request (json-auth/handle-session request))
 
   (POST "/login"
-        [] (json-auth/handle-session {:request-method :post}))
+       request (json-auth/handle-session request))
 
   (DELETE "/login"
-          [] (json-auth/handle-session {:request-method :delete}))
+        request (json-auth/handle-session request))
 
   (GET "/catalogue"
        [] (get-catalogue))
