@@ -1,12 +1,14 @@
 (ns ordinator.core
-  (:require   [ordinator.todo :as todo]
-              [ordinator.order :as order]
-              [reagent.core :as reagent :refer [atom]]
-              [reagent.session :as session]
-              [secretary.core :as secretary :include-macros true]
-              [goog.events :as events]
-              [goog.history.EventType :as EventType])
-    (:import goog.History))
+  (:require [ordinator.order :as order]
+            [ordinator.login :as login]
+            [ordinator.todo :as todo]
+            [reagent.core :as reagent :refer [atom]]
+            [reagent.session :as session]
+            [secretary.core :as secretary :include-macros true]
+            [goog.events :as events]
+            [goog.history.EventType :as EventType])
+  (:import goog.History))
+
 
 ;; -------------------------
 ;; Views
@@ -16,6 +18,14 @@
    [:div [:a {:href "#/order"} "View your order"]]
    [:div [:a {:href "#/about"} "go to about page"]]
    [:div [:a {:href "#/todo"} "go to to-do page"]]])
+
+(defn login-page []
+  [login/render-login-page])
+
+(defn main-page []
+  (if (login/logged-in?)
+    (home-page)
+    (login-page)))
 
 (defn about-page []
   [:div [:h2 "About Ordinator"]
@@ -35,7 +45,10 @@
 (secretary/set-config! :prefix "#")
 
 (secretary/defroute "/" []
-  (session/put! :current-page #'home-page))
+  (session/put! :current-page #'main-page))
+
+(secretary/defroute "/login" []
+  (session/put! :current-page #'login-page))
 
 (secretary/defroute "/about" []
   (session/put! :current-page #'about-page))

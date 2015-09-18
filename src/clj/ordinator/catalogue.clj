@@ -38,4 +38,4 @@
                      (assoc m codekey line))) {})
          (reset! catalogue-data))))
 
-(defn get-catalogue [] @catalogue-data)
+(defn get-catalogue [] (prn "get-cat") @catalogue-data)

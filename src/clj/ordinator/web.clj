@@ -1,13 +1,15 @@
 (ns ordinator.web
-  (:require [ordinator.catalogue :as cat]
+  (:require [ordinator
+             [catalogue :as cat]
+             [auth :refer [wrap-json-authenticate login-form]]
+             [page-frame :refer [page-frame]]]
             [compojure
-             [core :refer [defroutes GET PUT]]
+             [core :refer [defroutes GET PUT POST DELETE]]
              [route :as route]]
             [environ.core :refer [env]]
             [metrics.ring
              [expose :refer [expose-metrics-as-json]]
              [instrument :refer [instrument]]]
-            [ordinator.page-frame :refer [page-frame]]
             [prone.middleware :refer [wrap-exceptions]]
             [radix
              [error :refer [error-response wrap-error-handling]]
@@ -17,7 +19,13 @@
             [ring.middleware
              [format-params :refer [wrap-json-kw-params]]
              [json :refer [wrap-json-response]]
-             [params :refer [wrap-params]]]))
+             [params :refer [wrap-params]]
+             [session :refer [wrap-session]]
+             [keyword-params :refer [wrap-keyword-params]]
+             [nested-params :refer [wrap-nested-params]]]
+            [cemerick.friend :as friend]
+            [marianoguerra.friend-json-workflow :as json-auth]
+            [ring.util.response :refer [response]]))
 
 (def version
   (setup/version "ordinator"))
@@ -56,16 +64,34 @@
   (GET "/"
        [] (page-frame dev-mode?))
 
+  (GET "/login"
+       [] (json-auth/handle-session {:request-method :get}))
+
+  (POST "/login"
+        [] (json-auth/handle-session {:request-method :post}))
+
+  (DELETE "/login"
+          [] (json-auth/handle-session {:request-method :delete}))
+
   (GET "/catalogue"
        [] (get-catalogue))
 
   (PUT "/catalogue"
        [] (update-catalogue))
 
-  (route/not-found (error-response "Resource not found" 404)))
+  (route/not-found (error-response "Resource not found!" 404)))
+
+(defn mywrapper [{:keys [session] :as handler}]
+  (fn [request]
+    (let [response (handler request)]
+      (prn "req: " request "resp: " response)
+      response)))
 
 (def app
   (-> routes
+      (mywrapper)
+      (wrap-json-authenticate)
+      (wrap-session)
       (cond-> dev-mode? wrap-exceptions)
       (wrap-reload)
       (instrument)
@@ -73,5 +99,6 @@
       (wrap-ignore-trailing-slash)
       (wrap-json-response)
       (wrap-json-kw-params)
+      (wrap-nested-params)
       (wrap-params)
       (expose-metrics-as-json)))

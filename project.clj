@@ -40,7 +40,8 @@
                                commons-logging
                                log4j
                                org.clojure/core.cache]]
-                 [com.cemerick/friend "0.2.1"]]
+                 [com.cemerick/friend "0.2.1"]
+                 [org.marianoguerra/friend-json-workflow "0.2.1"]]
 
   :exclusions [commons-logging
                log4j

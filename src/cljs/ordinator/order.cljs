@@ -153,14 +153,18 @@
         [:span.origin.orderinput origin]
         [:span.description.orderinput description]]]]]))
 
+(defn header []
+  [:div.header [:h1 [:div.site-title "Albany ordinator"]]])
 
 (defn render-order-page []
   (get-catalogue! catalog)
   [:div
-   [:div [:h2 "Your current order"]
-    [:div [:h3 "Enter new item"]
-     [order-item-component]]]
-   [:div
-    [:h3 "Items"]
-    [render-order]]
-   [:div [:a {:href "#/"} "go to the home page"]]])
+   [header]
+    [:div
+     [:div [:h2 "Your current order"]
+      [:div [:h3 "Enter new item"]
+       [order-item-component]]]
+     [:div
+      [:h3 "Items"]
+      [render-order]]
+     [:div [:a {:href "#/"} "go to the home page"]]]])
