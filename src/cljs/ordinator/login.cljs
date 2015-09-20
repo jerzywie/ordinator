@@ -70,11 +70,11 @@
 
 (defn render-login-page []
   (let [submit-enabled (not (and (nil? @username) (nil? @password)))]
-    (prn "u" @username "p" @password "se" submit-enabled)
     [:div
-     [:h1 "Please login first!"]
-     [username-input username]
-     [password-input password]
-     [submit-login "login" "login" submit-enabled do-login! ]
+     [:div
+      [:h1 "Please login first!"]
+      [username-input username]
+      [password-input password]
+      [submit-login "login" "login" submit-enabled do-login!]]
      [:div.errormessage
       [:span @message]]]))

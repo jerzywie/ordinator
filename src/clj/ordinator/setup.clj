@@ -1,5 +1,7 @@
 (ns ordinator.setup
-  (:require [ordinator.web :as web]
+  (:require [ordinator
+             [web :as web]
+             [dynamo :as dynamo]]
             [clojure.string :as str]
             [environ.core :refer [env]]
             [metrics.core :refer [default-registry]]
@@ -46,6 +48,7 @@
   (setup/configure-logging)
   (configure-graphite-appender)
   (setup/start-graphite-reporting {:graphite-prefix (str/join "." [(env :environment-name) (env :service-name) (env :box-id setup/hostname)])})
+  (dynamo/ensure-tables)
   (reset! server (start-server)))
 
 (defn stop

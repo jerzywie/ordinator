@@ -2,7 +2,8 @@
   (:require [ordinator
              [catalogue :as cat]
              [auth :refer [wrap-json-authenticate login-form]]
-             [page-frame :refer [page-frame]]]
+             [page-frame :refer [page-frame]]
+             [dynamo :as db]]
             [compojure
              [core :refer [defroutes GET PUT POST DELETE]]
              [route :as route]]
@@ -53,6 +54,16 @@
   {:status 200
    :body (cat/update-catalogue)})
 
+(defn get-user-order
+  [user orderdate]
+  (let [order (db/get-user-order user orderdate)]
+    {:status 200
+     :body order}))
+
+(defn save-user-order
+  [{:keys [route-params body-params]}]
+  (db/save-user-order (merge route-params body-params)))
+
 (defroutes routes
 
   (GET "/healthcheck"
@@ -71,7 +82,14 @@
        request (json-auth/handle-session request))
 
   (DELETE "/login"
-        request (json-auth/handle-session request))
+          request (json-auth/handle-session request))
+
+  (GET "/order/:user/:orderdate"
+       [user orderdate]
+       (get-user-order user orderdate))
+
+  (PUT "/order/:user/:orderdate" req
+       (save-user-order req))
 
   (GET "/catalogue"
        [] (get-catalogue))

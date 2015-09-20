@@ -1,5 +1,7 @@
 (ns ordinator.order
-  (:require [reagent.core :as r]
+  (:require [ordinator.login :as login]
+            [ordinator.utils :as utils]
+            [reagent.core :as r]
             [cljs.core.async :refer [chan <! close!]]
             [cljs-http.client :as http]
             [clojure.string :as s]
@@ -42,13 +44,32 @@
 (defn addvat [v]
   (if (= v "Z") " +VAT" ""))
 
-(defn get-catalogue! [result]
+(defn get-catalogue [result]
   "Get catalogue data.
    result is the ratom to hold the data"
   (go
-    (reset! result {:loading true})
-    (let [{:keys [status body] :as response} (<! (http/get "/catalogue"))]
-      (reset! result body))))
+    (when (nil? (seq @result))
+      (reset! result {:loading true})
+      (prn "getting catalogue")
+      (let [{:keys [status body] :as response} (<! (http/get "/catalogue"))]
+        (reset! result body)))))
+
+(defn get-order [user order-date result]
+  "Get order data.
+   result is the ratom to hold the data"
+  (go
+    (when (nil? @result)
+      (prn "getting order")
+      (let [{:keys [status body] :as response} (<! (http/get "/order/jerzy/current"))]
+        (reset! result (:items body))))))
+
+(defn save-order []
+  "Save order data."
+  (when (@member-order)
+    (prn "saving order")
+    (http/put "/order/jerzy/current"
+              {:json-params {:user :jerzy :orderdate :current
+                             :items @member-order}})))
 
 (defn order-input-field
   [id placeholder value on-change]
@@ -68,7 +89,7 @@
    [:label {:for id} title]
    [:span.orderinput value]])
 
-(defn submit-order
+(defn add-order-line
   [id title enabled on-click]
   [:div.orderinput.ordersubmit
    [:input.submit {:type "submit"
@@ -146,25 +167,31 @@
        [order-input-field "quantity" "in units" quantity quantity-onchange]
        [order-readonly-field "packsordered" "Packs ordered" (tonumber (/ quantity unitsperpack))]
        [order-readonly-field "estcost" "Estimated cost" (toprice estcost)]
-       [submit-order "add" "Add" submit-enabled add-onclick]]]
+       [add-order-line "add" "Add" submit-enabled add-onclick]]]
      [:div.clearfix
       [:span
        [:div.orderinput
         [:span.origin.orderinput origin]
         [:span.description.orderinput description]]]]]))
 
-(defn header []
-  [:div.header [:h1 [:div.site-title "Albany ordinator"]]])
+(defn submit-save-order
+  []
+  [:div.orderinput.ordersubmit
+   [:input.submit {:type "submit"
+                   :id "saveorder"
+                   :value "Save"
+                   :on-click (fn [e] (save-order))}]])
 
 (defn render-order-page []
-  (get-catalogue! catalog)
+  (get-catalogue catalog)
+  (get-order (login/get-username) "current" member-order)
   [:div
-   [header]
+   [utils/header]
     [:div
      [:div [:h2 "Your current order"]
       [:div [:h3 "Enter new item"]
        [order-item-component]]]
      [:div
-      [:h3 "Items"]
+      [:h3 "Items" [submit-save-order]]
       [render-order]]
      [:div [:a {:href "#/"} "go to the home page"]]]])

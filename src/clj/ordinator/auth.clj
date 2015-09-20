@@ -10,10 +10,12 @@
             [ring.util.response :refer [status response]]))
 
 ; a dummy in-memory user "database"
-(def users {"root" {:username "root"
+(def users {"root" {:id 0
+                    :username "root"
                     :password (creds/hash-bcrypt "admin")
                     :roles #{::admin}}
-            "jerzy" {:username "jerzy"
+            "jerzy" {:id 1
+                     :username "jerzy"
                      :password (creds/hash-bcrypt "albany")
                      :roles #{::user}}})
 
