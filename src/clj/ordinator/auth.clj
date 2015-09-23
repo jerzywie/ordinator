@@ -17,6 +17,10 @@
             "jerzy" {:id 1
                      :username "jerzy"
                      :password (creds/hash-bcrypt "albany")
+                     :roles #{::user}}
+            "sally" {:id 1
+                     :username "sally"
+                     :password (creds/hash-bcrypt "albany")
                      :roles #{::user}}})
 
 (derive ::admin ::user)

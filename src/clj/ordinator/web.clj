@@ -62,7 +62,8 @@
 
 (defn save-user-order
   [{:keys [route-params body-params]}]
-  (db/save-user-order (merge route-params body-params)))
+  (db/save-user-order (merge route-params body-params))
+  {:status 200})
 
 (defroutes routes
 

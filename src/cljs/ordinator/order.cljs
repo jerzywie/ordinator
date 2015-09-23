@@ -60,16 +60,25 @@
   (go
     (when (nil? @result)
       (prn "getting order")
-      (let [{:keys [status body] :as response} (<! (http/get "/order/jerzy/current"))]
+      (let [user (login/get-username)
+            orderdate "current"
+            path "/order/%s/%s"
+            resource (gstring/format path user orderdate)
+            {:keys [status body] :as response} (<! (http/get resource))]
         (reset! result (:items body))))))
 
 (defn save-order []
   "Save order data."
-  (when (@member-order)
-    (prn "saving order")
-    (http/put "/order/jerzy/current"
-              {:json-params {:user :jerzy :orderdate :current
-                             :items @member-order}})))
+  (prn "saving order.1")
+  (when @member-order
+    (let [user (login/get-username)
+          orderdate "current"
+          path "/order/%s/%s"
+          resource (gstring/format path user orderdate)]
+      (prn "saving order")
+      (http/put resource
+                {:json-params {:user (keyword user) :orderdate (keyword orderdate)
+                               :items @member-order}}))))
 
 (defn order-input-field
   [id placeholder value on-change]
