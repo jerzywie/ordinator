@@ -193,14 +193,15 @@
 
 (defn render-order-page []
   (get-catalogue catalog)
-  (get-order (login/get-username) "current" member-order)
-  [:div
-   [utils/header]
+  (let [username (login/get-username)]
+    (get-order username "current" member-order)
     [:div
-     [:div [:h2 "Your current order"]
-      [:div [:h3 "Enter new item"]
-       [order-item-component]]]
+     [login/header]
      [:div
-      [:h3 "Items" [submit-save-order]]
-      [render-order]]
-     [:div [:a {:href "#/"} "go to the home page"]]]])
+      [:div [:h2 "Your current order"]
+       [:div [:h3 "Enter new item"]
+        [order-item-component]]]
+      [:div
+       [:h3 "Items" [submit-save-order]]
+       [render-order]]
+      [:div [:a {:href "#/"} "go to the home page"]]]]))

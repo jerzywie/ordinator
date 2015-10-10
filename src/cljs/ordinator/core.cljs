@@ -17,7 +17,7 @@
 (defn home-page []
   (let [username (login/get-username)]
     [:div
-     [utils/header]
+     [login/header]
      [:h2 "Welcome to Ordinator " username]
      [:div [:a {:href "#/order"} "View your order"]]
      [:div [:a {:href "#/about"} "go to about page"]]

@@ -26,8 +26,8 @@
   (when (logged-in?)
     (some #{role} (:roles @user))))
 
-(defn do-login! []
-  "Post login creds"
+(defn do-login!
+  []
   (go
     (let [{:keys [status body] :as response} (<! (http/post
                                                   "/login"
@@ -35,7 +35,8 @@
                                                    {:username @username :password @password}}))]
       (case status
         201 (reset! user body)
-        (reset! message (:reason body))))))
+        (reset! message (:reason body)))
+      (reset! password nil))))
 
 (defn input-element
   "An input element which updates its value on change."
@@ -69,11 +70,25 @@
   (fn []
    [input-element "password" "password" "password" password]))
 
+(defn sign-out! []
+  (go
+    (let [{:keys [status body] :as response} (<! (http/delete "/login" ))]
+      (case status
+        200 (reset! user nil)))))
+
+(defn header []
+  [:div.header
+   [:h1.site-title "Albany ordinator"]
+   (when-let [username (get-username)]
+     [:div.username
+      [:div username]
+      [:div [:a {:href "#/" :on-click (fn [e]  (sign-out!))} "sign-out"]]])])
+
 (defn render-login-page []
   (let [submit-enabled (not (and (nil? @username) (nil? @password)))]
     [:div
      [:div
-      [utils/header]
+      [header]
       [:h2 "Please sign-in"]
       [username-input username]
       [password-input password]
