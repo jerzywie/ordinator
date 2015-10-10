@@ -3,5 +3,5 @@
 
 (defn header []
   [:div.header
-   [:h1 [:div.site-title "Albany ordinator"]]
-   [:span (login/get-username)]])
+   [:h1.site-title "Albany ordinator"]
+   [:div.username (login/get-username)]])

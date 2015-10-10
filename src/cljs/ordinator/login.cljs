@@ -1,5 +1,6 @@
 (ns ordinator.login
-  (:require [reagent.core :as r]
+  (:require [ordinator.utils :as utils]
+            [reagent.core :as r]
             [cljs.core.async :refer [chan <! close!]]
             [cljs-http.client :as http]
             [clojure.string :as s])
@@ -72,9 +73,10 @@
   (let [submit-enabled (not (and (nil? @username) (nil? @password)))]
     [:div
      [:div
-      [:h1 "Please login first!"]
+      [utils/header]
+      [:h2 "Please sign-in"]
       [username-input username]
       [password-input password]
-      [submit-login "login" "login" submit-enabled do-login!]]
+      [submit-login "login" "Sign in" submit-enabled do-login!]]
      [:div.errormessage
       [:span @message]]]))

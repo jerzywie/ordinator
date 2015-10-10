@@ -2,6 +2,7 @@
   (:require [ordinator.order :as order]
             [ordinator.login :as login]
             [ordinator.todo :as todo]
+            [ordinator.utils :as utils]
             [reagent.core :as reagent :refer [atom]]
             [reagent.session :as session]
             [secretary.core :as secretary :include-macros true]
@@ -15,18 +16,18 @@
 
 (defn home-page []
   (let [username (login/get-username)]
-   [:div [:h2 "Welcome to Ordinator " username]
-    [:div [:a {:href "#/order"} "View your order"]]
-    [:div [:a {:href "#/about"} "go to about page"]]
-    [:div [:a {:href "#/todo"} "go to to-do page"]]]))
+    [:div
+     [utils/header]
+     [:h2 "Welcome to Ordinator " username]
+     [:div [:a {:href "#/order"} "View your order"]]
+     [:div [:a {:href "#/about"} "go to about page"]]
+     [:div [:a {:href "#/todo"} "go to to-do page"]]]))
 
 (defn login-page []
   [login/render-login-page])
 
 (defn main-page []
-  (if (login/logged-in?)
-    (home-page)
-    (login-page)))
+  (home-page))
 
 (defn about-page []
   [:div [:h2 "About Ordinator"]
@@ -39,7 +40,9 @@
   (todo/todo-app))
 
 (defn current-page []
-  [:div [(session/get :current-page)]])
+  [:div [(if (login/logged-in?)
+           (session/get :current-page)
+           #'login-page)]])
 
 ;; -------------------------
 ;; Routes
