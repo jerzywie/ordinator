@@ -18,15 +18,15 @@
 
 (def order-item (r/atom nil))
 
-(def member-order (r/atom nil))
+(defn cache-order
+  "Get order and save in local cache"
+  [user orderdate]
+  (utils/get-order! user orderdate)
+  (prn "cache-order " (utils/get-order-items)))
 
 (defn code->key
   [code]
   (-> code s/trim s/lower-case keyword))
-
-(defn delete
-  [code]
-  (swap! member-order dissoc code))
 
 (defn tonumber
   ([v curr]
@@ -54,31 +54,9 @@
       (let [{:keys [status body] :as response} (<! (http/get "/catalogue"))]
         (reset! result body)))))
 
-(defn get-order [user order-date result]
-  "Get order data.
-   result is the ratom to hold the data"
-  (go
-    (when (nil? @result)
-      (prn "getting order")
-      (let [user (login/get-username)
-            orderdate "current"
-            path "/order/%s/%s"
-            resource (gstring/format path user orderdate)
-            {:keys [status body] :as response} (<! (http/get resource))]
-        (reset! result (:items body))))))
 
-(defn save-order []
-  "Save order data."
-  (prn "saving order.1")
-  (when @member-order
-    (let [user (login/get-username)
-          orderdate "current"
-          path "/order/%s/%s"
-          resource (gstring/format path user orderdate)]
-      (prn "saving order")
-      (http/put resource
-                {:json-params {:user (keyword user) :orderdate (keyword orderdate)
-                               :items @member-order}}))))
+
+
 
 (defn order-input-field
   [id placeholder value on-change]
@@ -117,7 +95,7 @@
    [:td.rightjust quantity]
    [:td.rightjust (tonumber estcost)]
    [:td
-    [:button.destroy {:on-click #(delete (code->key code))}]]
+    [:button.destroy {:on-click #(utils/delete-order-item (code->key code))}]]
    ])
 
 (defn render-totals [])
@@ -137,7 +115,7 @@
       [:th "Est cost"]
       [:th ""]]]
     (into [:tbody]
-          (map render-order-line (vals @member-order)))]])
+          (map render-order-line (vals (utils/get-order-items))))]])
 
 (defn calc-order-item
   []
@@ -149,7 +127,8 @@
 
 (defn order-item-component
   []
-  (let [{:keys [code codeval description origin packsize price vat unit unitsperpack splits? quantity estcost]
+  (let [{:keys [code codeval description origin packsize price vat
+                unit unitsperpack splits? quantity estcost]
          :as order-line} (calc-order-item)
          submit-enabled (and (> price 0) (> quantity 0))
          code-onchange (fn [codeval]
@@ -158,11 +137,11 @@
                            (reset! order-item itemdata)
                            (prn "code o/c" @order-item)))
          quantity-onchange (fn [qty] (let [estcost (* (/ qty unitsperpack) price)]
-                                      (swap! order-item assoc :quantity qty :estcost estcost)
-                                      (prn "qty o/c" @order-item)))
+                                       (swap! order-item assoc :quantity qty :estcost estcost)
+                                       (prn "qty o/c" @order-item)))
          add-onclick (fn [] (let [code (code->key (:code @order-item))]
-                             (swap! member-order assoc code @order-item)
-                             (reset! order-item nil)))]
+                              (utils/add-order-item code @order-item)
+                              (reset! order-item nil)))]
 
     [:div.container
      [:div.clearfix
@@ -189,12 +168,12 @@
    [:input.submit {:type "submit"
                    :id "saveorder"
                    :value "Save"
-                   :on-click (fn [e] (save-order))}]])
+                   :on-click (fn [e] (utils/save-order))}]])
 
 (defn render-order-page []
   (get-catalogue catalog)
-  (let [username (login/get-username)]
-    (get-order username "current" member-order)
+  (let [username (utils/get-username)]
+    (cache-order username "current")
     [:div
      [login/header]
      [:div

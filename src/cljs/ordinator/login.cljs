@@ -8,35 +8,11 @@
 
 (def username (r/atom nil))
 (def password (r/atom nil))
-(def message (r/atom nil))
 
-(def user (r/atom nil))
-
-(defn logged-in?
+(defn do-login
   []
-  (not (nil? @user)))
-
-(defn get-username
-  []
-  (when (logged-in?)
-    (:username @user)))
-
-(defn has-role?
-  [role]
-  (when (logged-in?)
-    (some #{role} (:roles @user))))
-
-(defn do-login!
-  []
-  (go
-    (let [{:keys [status body] :as response} (<! (http/post
-                                                  "/login"
-                                                  {:json-params
-                                                   {:username @username :password @password}}))]
-      (case status
-        201 (reset! user body)
-        (reset! message (:reason body)))
-      (reset! password nil))))
+  (utils/do-login! @username @password)
+  (reset! password nil))
 
 (defn input-element
   "An input element which updates its value on change."
@@ -74,12 +50,12 @@
   (go
     (let [{:keys [status body] :as response} (<! (http/delete "/login" ))]
       (case status
-        200 (reset! user nil)))))
+        200 (utils/reset-appstate!)))))
 
 (defn header []
   [:div.header
    [:h1.site-title "Albany ordinator"]
-   (when-let [username (get-username)]
+   (when-let [username (utils/get-username)]
      [:div.username
       [:div username]
       [:div [:a {:href "#/" :on-click (fn [e]  (sign-out!))} "sign-out"]]])])
@@ -92,6 +68,6 @@
       [:h2 "Please sign-in"]
       [username-input username]
       [password-input password]
-      [submit-login "login" "Sign in" submit-enabled do-login!]]
+      [submit-login "login" "Sign in" submit-enabled do-login]]
      [:div.errormessage
-      [:span @message]]]))
+      [:span (utils/get-message)]]]))

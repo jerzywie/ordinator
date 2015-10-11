@@ -103,7 +103,8 @@
 (defn mywrapper [{:keys [session] :as handler}]
   (fn [request]
     (let [response (handler request)]
-      (prn "req: " request "resp: " response)
+      (prn "req : " (:request-method request) (:uri request) ":session" (:session request))
+      (prn "resp: :status" (:status response) ":body " (apply str (take 5 (:body response))))
       response)))
 
 (def app

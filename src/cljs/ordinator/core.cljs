@@ -15,7 +15,7 @@
 ;; Views
 
 (defn home-page []
-  (let [username (login/get-username)]
+  (let [username (utils/get-username)]
     [:div
      [login/header]
      [:h2 "Welcome to Ordinator " username]
@@ -40,7 +40,7 @@
   (todo/todo-app))
 
 (defn current-page []
-  [:div [(if (login/logged-in?)
+  [:div [(if (utils/logged-in?)
            (session/get :current-page)
            #'login-page)]])
 
