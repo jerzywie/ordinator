@@ -78,7 +78,7 @@
 
 (defn add-order-line
   [id title enabled on-click]
-  [:div.orderinput.ordersubmit
+  [:div.orderinput
    [:input.submit {:type "submit"
                    :id id
                    :value title
@@ -181,6 +181,7 @@
        [:div [:h3 "Enter new item"]
         [order-item-component]]]
       [:div
-       [:h3 "Items" [submit-save-order]]
+       [:h3 "Items"]
+       [submit-save-order]
        [render-order]]
       [:div [:a {:href "#/"} "go to the home page"]]]]))

@@ -61,7 +61,7 @@
       (prn "getting order")
       (let [user (get-username)
             orderdate "current"
-            path "/order/%s/%s"
+            path "/users/%s/orders/%s"
             resource (gstring/format path user orderdate)
             {:keys [status body] :as response} (<! (http/get resource))]
         (swap! appstate assoc  :order (:items body))))))
@@ -80,7 +80,7 @@
   (when-let [order-items (get-order-items)]
     (let [user (get-username)
           orderdate "current"
-          path "/order/%s/%s"
+          path "/users/%s/orders/%s"
           resource (gstring/format path user orderdate)]
       (prn "saving order")
       (http/put resource

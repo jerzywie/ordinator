@@ -18,8 +18,12 @@
                      :username "jerzy"
                      :password (creds/hash-bcrypt "albany")
                      :roles #{::user}}
-            "sally" {:id 1
+            "sally" {:id 2
                      :username "sally"
+                     :password (creds/hash-bcrypt "albany")
+                     :roles #{::user}}
+            "matthew" {:id 3
+                     :username "matthew"
                      :password (creds/hash-bcrypt "albany")
                      :roles #{::user}}})
 

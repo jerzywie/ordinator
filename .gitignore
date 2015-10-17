@@ -16,3 +16,4 @@ dc-sdk.log
 figwheel_server.log
 resources/Essential_Stock_File.xls
 resources/public/js/out/*
+data-representations.json

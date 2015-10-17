@@ -65,6 +65,11 @@
   (db/save-user-order (merge route-params body-params))
   {:status 200})
 
+(defn get-orders
+  [orderdate]
+  {:status 200
+   :body {}})
+
 (defroutes routes
 
   (GET "/healthcheck"
@@ -85,12 +90,16 @@
   (DELETE "/login"
           request (json-auth/handle-session request))
 
-  (GET "/order/:user/:orderdate"
+  (GET "/users/:user/orders/:orderdate"
        [user orderdate]
        (get-user-order user orderdate))
 
-  (PUT "/order/:user/:orderdate" req
+  (PUT "/users/:user/orders/:orderdate" req
        (save-user-order req))
+
+  (GET "/orders/:orderdate"
+       [orderdate]
+       (get-orders orderdate))
 
   (GET "/catalogue"
        [] (get-catalogue))
