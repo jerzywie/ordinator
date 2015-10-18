@@ -29,6 +29,10 @@
 
 (derive ::admin ::user)
 
+(defn user-list
+  []
+  (into [] (rest (keys users))))
+
 (defn login-form
   []
   (h/html5

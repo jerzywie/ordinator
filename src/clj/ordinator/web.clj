@@ -3,7 +3,8 @@
              [catalogue :as cat]
              [auth :refer [wrap-json-authenticate login-form]]
              [page-frame :refer [page-frame]]
-             [dynamo :as db]]
+             [dynamo :as db]
+             [collation :as col]]
             [compojure
              [core :refer [defroutes GET PUT POST DELETE]]
              [route :as route]]
@@ -67,8 +68,9 @@
 
 (defn get-orders
   [orderdate]
-  {:status 200
-   :body {}})
+  (let [collation (col/collate-orders orderdate)]
+    {:status 200
+     :body collation}))
 
 (defroutes routes
 
@@ -113,7 +115,7 @@
   (fn [request]
     (let [response (handler request)]
       (prn "req : " (:request-method request) (:uri request) ":session" (:session request))
-      (prn "resp: :status" (:status response) ":body " (apply str (take 5 (:body response))))
+      (prn "resp: :status" (:status response) ":body " (take 5 (:body response)))
       response)))
 
 (def app
