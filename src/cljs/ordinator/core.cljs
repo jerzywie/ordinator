@@ -1,6 +1,7 @@
 (ns ordinator.core
   (:require [ordinator.order :as order]
             [ordinator.login :as login]
+            [ordinator.collation :as col]
             [ordinator.todo :as todo]
             [ordinator.utils :as utils]
             [reagent.core :as reagent :refer [atom]]
@@ -19,8 +20,11 @@
     [:div
      [login/header]
      [:h2 "Welcome to Ordinator " username]
-     [:div [:a {:href "#/order"} "View your order"]]
-     [:div [:a {:href "#/about"} "go to about page"]]
+     [:div
+      [:ul
+       [:li [:a {:href "#/order"} "View your order"]]
+       [:li [:a {:href "#/about"} "go to about page"]]
+       [:li [:a {:href "#/allorders"} "View collated order"]]]]
      [:div [:a {:href "#/todo"} "go to to-do page"]]]))
 
 (defn login-page []
@@ -35,6 +39,9 @@
 
 (defn order-page []
   [order/render-order-page])
+
+(defn allorders-page []
+  [col/render-allorders-page])
 
 (defn todo-page []
   (todo/todo-app))
@@ -59,6 +66,9 @@
 
 (secretary/defroute "/order" []
   (session/put! :current-page #'order-page))
+
+(secretary/defroute "/allorders" []
+  (session/put! :current-page #'allorders-page))
 
 (secretary/defroute "/todo" []
   (session/put! :current-page #'todo-page))

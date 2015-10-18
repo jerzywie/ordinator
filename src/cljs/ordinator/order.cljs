@@ -28,6 +28,7 @@
   [code]
   (-> code s/trim s/lower-case keyword))
 
+;TODO move these and the dupes in collation.cljs into utils
 (defn tonumber
   ([v curr]
     (cond
@@ -53,10 +54,6 @@
       (prn "getting catalogue")
       (let [{:keys [status body] :as response} (<! (http/get "/catalogue"))]
         (reset! result body)))))
-
-
-
-
 
 (defn order-input-field
   [id placeholder value on-change]

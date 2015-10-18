@@ -13,8 +13,18 @@
     :message \"any auth failure message\"
     :order {:item1code {item1data}
             :item2code {item2data}
-            ...}"
-  (r/atom nil))
+            ...}
+    :allorders {
+      :orderdate date
+      :items {
+        :item1code {
+          :itemdata {item1-general-data}
+          :orders {
+             :member1code {member1-order}
+             :member2code {member2-order}
+          }}}}}"
+
+(r/atom nil))
 
 (defn reset-appstate!
  []
@@ -86,3 +96,18 @@
       (http/put resource
                 {:json-params {:user (keyword user) :orderdate (keyword orderdate)
                                :items order-items}}))))
+
+(defn all-orders
+  []
+  (:allorders @appstate))
+
+(defn get-allorders!
+  [orderdate]
+  (go
+    (let [path "/orders/%s"
+          resource (gstring/format path orderdate)
+          {:keys [status body] :as response} (<! (http/get resource))]
+      (prn "get-allorders! body" body)
+      (swap! appstate assoc  :allorders body)
+      (prn "get-allorders! appstate" @appstate)
+      (:allorders @appstate))))
