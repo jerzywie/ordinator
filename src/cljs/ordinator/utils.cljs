@@ -108,6 +108,4 @@
           resource (gstring/format path orderdate)
           {:keys [status body] :as response} (<! (http/get resource))]
       (prn "get-allorders! body" body)
-      (swap! appstate assoc  :allorders body)
-      (prn "get-allorders! appstate" @appstate)
-      (:allorders @appstate))))
+      (swap! appstate assoc  :allorders body))))
