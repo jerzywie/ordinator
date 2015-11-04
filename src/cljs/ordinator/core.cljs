@@ -19,13 +19,7 @@
   (let [username (utils/get-username)]
     [:div
      [login/header]
-     [:h2 "Welcome to Ordinator " username]
-     [:div
-      [:ul
-       [:li [:a {:href "#/order"} "View your order"]]
-       [:li [:a {:href "#/about"} "go to about page"]]
-       [:li [:a {:href "#/allorders"} "View collated order"]]]]
-     [:div [:a {:href "#/todo"} "go to to-do page"]]]))
+     [:h2 "Welcome to Ordinator " username]]))
 
 (defn login-page []
   [login/render-login-page])
@@ -34,8 +28,9 @@
   (home-page))
 
 (defn about-page []
-  [:div [:h2 "About Ordinator"]
-   [:div [:a {:href "#/"} "go to the home page"]]])
+  [:div
+   [login/header]
+   [:h2 "About Ordinator"]])
 
 (defn order-page []
   [order/render-order-page])

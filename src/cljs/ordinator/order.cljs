@@ -140,7 +140,7 @@
                               (utils/add-order-item code @order-item)
                               (reset! order-item nil)))]
 
-    [:div.container
+    [:div.order-container
      [:div.clearfix
       [:span
        [order-input-field "code" "code?" codeval code-onchange]
@@ -180,5 +180,4 @@
       [:div
        [:h3 "Items"]
        [submit-save-order]
-       [render-order]]
-      [:div [:a {:href "#/"} "go to the home page"]]]]))
+       [render-order]]]]))

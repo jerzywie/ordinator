@@ -1,14 +1,4 @@
-@charset "utf-8";
-
-.site-title {
-    font-size: 20pt;
-    text-align: center;
-    font-family: 'Stalemate', cursive;
-    font-weight: bold;
-}
-
 body {
-    padding-top: 70px;
     max-width: 800px;
     font: 14px 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size:12px;
@@ -22,6 +12,62 @@ body {
     -ms-font-smoothing: antialiased;
     -o-font-smoothing: antialiased;
     font-smoothing: antialiased;
+}
+
+
+h1, h2, h3 {
+  color: #000;
+}
+
+h1 {
+  font-size: 2.5em
+}
+
+h2 {
+  font-size: 2em
+}
+
+h3 {
+  font-size: 1.5em
+}
+
+
+.header {
+    background: #000;
+    width: 100%;
+    height: 66px;
+    float: left;
+    color: #333;
+    margin-bottom: -1px;
+}
+
+.header h1 {
+    margin-top: 2px;
+    margin-left: 10px;
+    font-size: 25pt;
+    text-align: center;
+    font-family: 'Stalemate', cursive;
+    font-weight: bold;
+    color: #FFF;
+    float: left;
+}
+
+.username {
+    color: #FFF;
+    font-size: 15pt;
+    float: right;
+    margin-top: 2px;
+    margin-left: 5px;
+}
+
+
+a {
+  text-decoration: none;
+  color: #09f;
+}
+
+a:hover {
+  text-decoration: underline;
 }
 
 .order,.balance {
@@ -53,10 +99,20 @@ table.order {
     width:100%
 }
 
-.order-container {
-    border: solid 1px black;
-    background: #ccc;
+div.balance {
+    float:right;
+    margin-top:8px;
+    margin-bottom:8px
 }
+
+.rightjust {
+    text-align:right
+}
+
+.bold {
+    font-weight:bold
+}
+
 
 button {
 	margin: 0;
@@ -72,6 +128,7 @@ button {
 	-o-appearance: none;
 	appearance: none;
 }
+
 
 button,
 input[type="checkbox"] {
@@ -115,6 +172,22 @@ div > label {
 span.orderinput {
     margin-top:3px;
 }
+
+.clearfix:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.container {
+    border: solid 1px black;
+    background: #ccc;
+}
+
+input.submit {
+    margin-top:13px;
+}
+
 
 
 .destroy {
