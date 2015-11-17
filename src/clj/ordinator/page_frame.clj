@@ -1,11 +1,11 @@
 (ns ordinator.page-frame
   (:require [hiccup
              [core :refer [html]]
-             [page :refer [include-css include-js]]]))
+             [page :refer [html5 include-css include-js]]]))
 
 (defn page-frame
   [dev-mode?]
-  (html
+  (html5
    [:html
     [:head
      [:meta {:charset "utf-8"}]
@@ -16,10 +16,7 @@
      (include-css (if dev-mode? "css/site.css" "css/site.min.css"))]
     [:body
      [:div#app
-      [:h3 "ClojureScript has not been compiled!"]
-      [:p "please run "
-       [:b "lein figwheel"]
-       " in order to start the compiler"]]
+      [:p "Loading..."]]
      (include-js "https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js")
      (include-js "js/bootstrap.min.js")
      (include-js "js/app.js")]]))

@@ -46,7 +46,8 @@
 
   :exclusions [commons-logging
                log4j
-               org.clojure/clojure]
+               org.clojure/clojure
+               cljsjs/react-with-addons]
 
   :plugins [[lein-environ "1.0.0"]
             [lein-release "1.0.5"]
@@ -170,5 +171,7 @@
                     :filemode "755"
                     :sources {:source [{:location "scripts/service/ordinator"
                                         :destination "ordinator"}]}}]}
+
+  :aot [ordinator.setup]
 
   :main ordinator.setup)

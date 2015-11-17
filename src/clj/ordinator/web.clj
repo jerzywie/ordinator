@@ -27,7 +27,8 @@
              [nested-params :refer [wrap-nested-params]]]
             [cemerick.friend :as friend]
             [marianoguerra.friend-json-workflow :as json-auth]
-            [ring.util.response :refer [response]]))
+            [ring.util.response :refer [response]]
+            [clojure.tools.logging :as log]))
 
 (def version
   (setup/version "ordinator"))
@@ -109,13 +110,15 @@
   (PUT "/catalogue"
        [] (update-catalogue))
 
+  (route/resources "/")
+
   (route/not-found (error-response "Resource not found!" 404)))
 
 (defn mywrapper [{:keys [session] :as handler}]
   (fn [request]
     (let [response (handler request)]
-      (prn "req : " (:request-method request) (:uri request) ":session" (:session request))
-      (prn "resp: :status" (:status response) ":body " (take 5 (:body response)))
+      (log/info "req : " (:request-method request) (:uri request) ":session" (:session request))
+      (log/info "resp: :status" (:status response))
       response)))
 
 (def app
