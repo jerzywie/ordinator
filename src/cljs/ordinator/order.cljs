@@ -83,7 +83,13 @@
                    :on-click (fn [e] (if on-click (on-click)))}]])
 
 (defn render-order-line [{:keys [code origin description packsize price unit quantity estcost]}]
-  [:tr
+  [:tr {:id code
+        :on-click (fn [e]
+                    (let [key (code->key code)
+                          itemdata (get (utils/get-order-items) key)]
+                      (prn "order-line-on-click key " key " items " (utils/get-order-items) " item " itemdata)
+                      (reset! order-item itemdata)
+                      (prn "order-item " @order-item)))}
    [:td code]
    [:td (s/trim (str origin " " description))]
    [:td packsize]
