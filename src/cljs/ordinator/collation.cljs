@@ -22,10 +22,15 @@
 (defn toprice [p]
   (tonumber p "£"))
 
+(defn make-key
+  [code member]
+  (str code "-" (name member)))
+
 (defn render-order-details
-  [{:keys [quantity estcost]}]
+  [key {:keys [quantity estcost]}]
   (prn "r-o-d q:" quantity "c:" estcost)
-  [:td quantity])
+  [:td {:key key
+        :on-click #(prn "click " key)} quantity])
 
 (defn render-collation-line
   [[key {:keys [itemdata orders]}]]
@@ -38,7 +43,14 @@
      [:td packsize]
      [:td.rightjust (tonumber price)]
      [:td unit]
-     (map #(render-order-details (% orders)) members)]))
+     (map #(render-order-details (make-key code %) (% orders)) members)
+     [:td
+      [:span
+       [:button.edit "edit"]
+       " "
+       [:button.save "save"]
+       " "
+       [:button.delete "delete"]]]]))
 
 (defn render-collated-order
   []
@@ -53,7 +65,8 @@
       [:th "Albany Unit"]
       [:th "Jerzy"]
       [:th "Sally"]
-      [:th "Matthew"]]]
+      [:th "Matthew"]
+      [:th ""]]]
     (into [:tbody]
           (map render-collation-line (:items (utils/all-orders))))]])
 
