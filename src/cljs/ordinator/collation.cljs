@@ -1,6 +1,7 @@
 (ns ordinator.collation
   (:require [ordinator.login :as login]
             [ordinator.utils :as utils]
+            [ordinator.tablecell :as tablecell]
             [reagent.core :as r]
             [cljs.core.async :refer [chan <! close!]]
             [cljs-http.client :as http]
@@ -26,24 +27,37 @@
   [code member]
   (str code "-" (name member)))
 
+(def editing (r/atom false))
+
+(defn isediting?
+  [code]
+  (= @editing code))
+
 (defn render-order-details
-  [key {:keys [quantity estcost]}]
-  (prn "r-o-d q:" quantity "c:" estcost)
-  [:td {:key key
-        :on-click #(prn "click " key)} quantity])
+  [code member focus {:keys [quantity estcost]}]
+  (let [k (make-key code member)]
+   [tablecell/render-editable-cell {:key k
+                                    :value quantity
+                                    :class "qty"
+                                    :editingfn #(isediting? code)
+                                    :givefocus? focus
+                                    :on-stop #(reset! editing false)
+                                    :on-save #(prn "on-save key:" k)}]))
 
 (defn render-collation-line
   [[key {:keys [itemdata orders]}]]
-  (prn "r-c-l c:" key "i:"  itemdata "o:" orders )
+  ;(prn "r-c-l c:" key "i:"  itemdata "o:" orders )
   (let [{:keys [code description packsize price unit]} itemdata
         members [:jerzy :sally :matthew]]
-    [:tr
+    [:tr {:on-double-click #(reset! editing code)}
      [:td code]
      [:td description]
      [:td packsize]
      [:td.rightjust (tonumber price)]
      [:td unit]
-     (map #(render-order-details (make-key code %) (% orders)) members)
+     (let [m (first members)]
+       (render-order-details code m true (m orders)))
+     (map #(render-order-details code % false (% orders)) (rest members))
      [:td
       [:span
        [:button.edit "edit"]

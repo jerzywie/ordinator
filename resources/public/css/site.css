@@ -53,6 +53,18 @@ table.order {
     width:100%
 }
 
+table.order .edit-hide {
+    display: none;
+}
+
+td input.edit {
+    width:100%;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+
+
 .order-container {
     border: solid 1px black;
     background: #ccc;
