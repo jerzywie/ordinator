@@ -25,15 +25,15 @@
                  [cljsjs/react "0.13.3-1"]
                  [hiccup "1.0.5"]
                  [com.cemerick/friend "0.2.1"]
-                 [org.clojure/clojurescript "0.0-3308" :scope "provided"]
+                 [org.clojure/clojurescript "1.8.40" :scope "provided"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"
                   :exclusions [org.clojure/clojure
                                commons-logging
                                log4j
                                org.clojure/core.cache]]
                  [prone "0.8.2"]
-                 [reagent "0.5.0"]
-                 [reagent-utils "0.1.5"]
+                 [reagent "0.5.1"]
+                 [reagent-utils "0.1.7"]
                  [secretary "1.2.3"]
                  [cljs-http "0.1.37"
                   :exclusions [org.clojure/clojure
@@ -110,18 +110,39 @@
                                   [junit "4.12"]
                                   [midje "1.6.3"]
                                   [rest-cljer "0.1.20"]
-                                  [lein-figwheel "0.3.7"
+                                  [lein-figwheel "0.5.2"
                                    :exclusions [org.clojure/clojure
                                                 commons-logging
                                                 log4j
-                                                org.clojure/core.cache]]
-                                  [org.clojure/tools.nrepl "0.2.10"]]
+                                                org.clojure/core.cache
+                                                org.clojure/core.memoize
+                                                ring/ring-core
+                                                org.ow2.asm/asm-all
+                                                org.clojure/data.priority-map
+                                                org.clojure/tools.reader
+                                                org.clojure/clojurescript
+                                                org.clojure/core.async
+                                                org.clojure/tools.analyzer.jvm]]
+                                  [org.clojure/tools.nrepl "0.2.12"]
+                                  [com.cemerick/piggieback "0.2.1"]]
 
                    :plugins [[lein-kibit "0.0.8"]
                              [lein-midje "3.1.3"]
                              [lein-rpm "0.0.5"]
-                             [lein-figwheel "0.3.7"]
-                             [lein-cljsbuild "1.0.6"]]
+                             [lein-figwheel "0.5.2"
+                              :exclusions [org.clojure/clojure
+                                           commons-logging
+                                           log4j
+                                           org.clojure/core.cache
+                                           org.clojure/core.memoize
+                                           ring/ring-core
+                                           org.ow2.asm/asm-all
+                                           org.clojure/data.priority-map
+                                           org.clojure/tools.reader
+                                           org.clojure/clojurescript
+                                           org.clojure/core.async
+                                           org.clojure/tools.analyzer.jvm]]
+                             [lein-cljsbuild "1.1.1"]]
 
                    :env {:dev-mode true}
 
@@ -132,6 +153,7 @@
                    :figwheel {:http-server-root "public"
                               :server-port 8080
                               :nrepl-port 7002
+                              :nrepl-middleware ["cemerick.piggieback/wrap-cljs-repl"]
                               :css-dirs ["resources/public/css"]
                               :ring-handler ordinator.web/app}
 
