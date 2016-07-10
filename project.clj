@@ -32,9 +32,9 @@
                                log4j
                                org.clojure/core.cache]]
                  [prone "0.8.2"]
+                 [petrol "0.1.2"]
                  [reagent "0.5.1"]
                  [reagent-utils "0.1.7"]
-                 [secretary "1.2.3"]
                  [cljs-http "0.1.37"
                   :exclusions [org.clojure/clojure
                                commons-logging
@@ -42,7 +42,9 @@
                                org.clojure/core.cache]]
                  [com.cemerick/friend "0.2.1"]
                  [org.marianoguerra/friend-json-workflow "0.2.1"]
-                 [com.taoensso/faraday "1.7.1"]]
+                 [com.taoensso/faraday "1.7.1"]
+                 [bidi "1.24.0"]
+                 [kibu/pushy "0.3.6"]]
 
   :exclusions [commons-logging
                log4j
