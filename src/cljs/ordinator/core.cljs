@@ -2,47 +2,28 @@
   (:require [petrol.core :as petrol]
             [petrol.routing :as petrol-routing]
             [cljs.ordinator.routes :as routes]
+            [cljs.ordinator.processing]
             [cljs.ordinator.view :as view]
-            [ordinator.order :as order]
-            [ordinator.login :as login]
-            [ordinator.collation :as col]
-            [ordinator.todo :as todo]
+            [cljs.ordinator.login.core :as login]
             [ordinator.utils :as utils]
             [reagent.core :as reagent :refer [atom]]
             [goog.events :as events]
             [goog.history.EventType :as EventType])
   (:import goog.History))
 
-(def initial-state {:view nil})
+(def initial-state {:view nil
+                    :login login/initial-state})
 
 (defonce !app (reagent/atom initial-state))
 
 ;; TODO remove all these page functions
-(defn home-page []
-  (let [username (utils/get-username)]
-    [:div
-     [login/header]
-     [:h2 "Welcome to Ordinator " username]]))
+;;(defn home-page [] (let [username (utils/get-username)] [:div [login/header] [:h2 "Welcome to Ordinator " username]]))
 
-(defn login-page []
-  [login/render-login-page])
+;;(defn login-page [] [login/render-login-page])
 
-(defn main-page []
-  (home-page))
+;;(defn order-page []  [order/render-order-page])
 
-(defn about-page []
-  [:div
-   [login/header]
-   [:h2 "About Ordinator"]])
-
-(defn order-page []
-  [order/render-order-page])
-
-(defn allorders-page []
-  [col/render-allorders-page])
-
-(defn todo-page []
-  (todo/todo-app))
+;;(defn allorders-page []  [col/render-allorders-page])
 
 ;; figwheel reload-hook
 (defn reload-hook

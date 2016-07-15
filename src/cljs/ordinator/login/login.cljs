@@ -38,7 +38,8 @@
 
 (defn username-input
   [username]
-  [input-element "username" "username" "text" username])
+  (fn []
+   [input-element "username" "username" "text" username]))
 
 (defn password-input
   [password]

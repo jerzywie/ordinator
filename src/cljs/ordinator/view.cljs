@@ -1,6 +1,9 @@
 (ns cljs.ordinator.view
-  (:require [ordinator.utils :as utils]
-            [cljs.ordinator.routes :refer [href-for]]))
+  (:require [petrol.core :refer [send! forward]]
+            [ordinator.utils :as utils]
+            [cljs.ordinator.routes :refer [href-for]]
+            [cljs.ordinator.messages :as m]
+            [cljs.ordinator.login.view :as login]))
 
 (defn sign-out! [])
 
@@ -16,6 +19,10 @@
 (defn allorders-page []
   (fn [] [:div "all-orders-page"]))
 
+(defn login-page [ui-channel app]
+  (fn [] [:div
+         [login/root (forward m/->Login ui-channel) (:login app)]]))
+
 (defn header [ui-channel app]
   [:nav.navbar.navbar-default.navbar-fixed-top
    [:div.container-fluid
@@ -25,7 +32,8 @@
      [:ul.nav.navbar-nav
       [:li [:a {:href (href-for :order-page)} "View your order"]]
       [:li [:a {:href (href-for :about-page)} "About"]]
-      [:li [:a {:href (href-for :allorders-page)} "View collated order"]]]
+      [:li [:a {:href (href-for :allorders-page)} "View collated order"]]
+      [:li [:a {:href (href-for :login-page)} "Login"]]]
      (when-let [username (utils/get-username)]
        [:ul.nav.navbar-nav.navbar-right
         [:li.dropdown
@@ -37,11 +45,12 @@
 
 (defn root [ui-channel app]
   [:div
-   [header ui-channel app]
+   ;[header ui-channel app]
    [(case (-> app :view :handler)
       :about-page (@(var about-page))
       :order-page (@(var order-page))
       :allorders-page (@(var allorders-page))
+      :login-page (@(var login-page) ui-channel app)
       (@(var home-page) ui-channel app))]
    [:h3 "debug app state"]
    [:div [:code (pr-str app)]]])
