@@ -10,3 +10,7 @@
                   {:json-params
                    {:username username :password password}})]
     (petrol/wrap m/map->LoginResult response)))
+
+(defn do-logout []
+  (let [response (http/delete "/login" )]
+    (petrol/wrap m/map->LogoutResult response)))

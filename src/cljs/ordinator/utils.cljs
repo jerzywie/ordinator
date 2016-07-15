@@ -48,17 +48,6 @@
   []
   (:message @appstate))
 
-(defn do-login!
-  [username password]
-  (go
-    (let [{:keys [status body] :as response} (<! (http/post
-                                                  "/login"
-                                                  {:json-params
-                                                   {:username username :password password}}))]
-      (case status
-        201 (reset! appstate {:user body})
-        (reset! appstate {:message (:reason body)})))))
-
 (defn get-order-items
   []
   (:order @appstate))

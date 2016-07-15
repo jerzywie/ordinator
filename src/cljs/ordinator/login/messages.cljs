@@ -7,3 +7,7 @@
 (defrecord DoLogin [])
 
 (defrecord LoginResult [body])
+
+(defrecord DoLogout [])
+
+(defrecord LogoutResult [body])

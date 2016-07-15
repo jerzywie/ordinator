@@ -29,3 +29,19 @@
     (case status
       201 (assoc app :user body :message nil :loggedin true)
       (assoc app :user nil :message (:reason body) :loggedin false))))
+
+(extend-protocol Message
+  m/DoLogout
+  (process-message [_ app]
+    app))
+
+(extend-protocol EventSource
+  m/DoLogout
+  (watch-channels [_ app]
+    #{(rest/do-logout)}))
+
+(extend-protocol Message
+  m/LogoutResult
+  (process-message [{:keys [status body] :as response} app]
+    (case status
+      200 (assoc app :username nil :password nil :user nil :message nil :loggedin false))))

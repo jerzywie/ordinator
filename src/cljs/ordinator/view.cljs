@@ -3,7 +3,8 @@
             [ordinator.utils :as utils]
             [cljs.ordinator.routes :refer [href-for]]
             [cljs.ordinator.messages :as m]
-            [cljs.ordinator.login.view :as login]))
+            [cljs.ordinator.login.view :as login]
+            [cljs.ordinator.login.messages :as login-messages :refer [DoLogout]]))
 
 (defn sign-out! [])
 
@@ -41,7 +42,7 @@
           username [:span.caret]]
          [:ul.dropdown-menu
           [:li
-           [:a {:href "#/" :on-click (fn [e]  (sign-out!))} "sign-out"]]]]])]]])
+           [:a {:href "#/" :on-click (send! (forward m/->Login ui-channel) (login-messages/->DoLogout))} "sign-out"]]]]])]]])
 
 (defn root [ui-channel app]
   [:div
