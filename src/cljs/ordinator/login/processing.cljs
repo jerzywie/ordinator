@@ -15,7 +15,8 @@
 
 (extend-protocol Message
   m/DoLogin
-  (process-message [_ app] app))
+  (process-message [_ app]
+    app))
 
 (extend-protocol EventSource
   m/DoLogin

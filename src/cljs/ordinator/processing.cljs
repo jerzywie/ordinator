@@ -11,7 +11,6 @@
 (extend-protocol Message
   m/Login
   (process-message [{:keys [submessage]} app]
-    (prn "process-message submessage" submessage)
     (process-submessage submessage app [:login])))
 
 (extend-protocol EventSource

@@ -28,14 +28,13 @@
 
 (defn password-input
   [ui-channel password]
-  (fn []
-    [input-element
-     ui-channel
-     "password"
-     "password"
-     "password"
-     password
-     m/->ChangePassword]))
+  [input-element
+   ui-channel
+   "password"
+   "password"
+   "password"
+   password
+   m/->ChangePassword])
 
 (defn submit-login
   [ui-channel id title enabled]
@@ -44,12 +43,11 @@
                    :id id
                    :value title
                    :disabled (not enabled)
-                   :on-click (send! ui-channel m/->DoLogin)}]])
+                   :on-click (send! ui-channel (m/->DoLogin))}]])
 
 (defn root
   [ui-channel {:keys [username password] :as app}]
   (let [submit-enabled (not (or (nil? username) (nil? password)))]
-    (prn "login:root u" username "p" password "app" app "submit-enabled" submit-enabled)
     [:div
      [:div
       [:h2 "Please sign-in"]

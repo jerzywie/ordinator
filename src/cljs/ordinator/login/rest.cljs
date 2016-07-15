@@ -9,5 +9,4 @@
                   "/login"
                   {:json-params
                    {:username username :password password}})]
-    (prn "rest/do-login u" username "p" password "resp" response)
     (petrol/wrap m/map->LoginResult response)))
