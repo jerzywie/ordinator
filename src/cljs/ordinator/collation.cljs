@@ -1,6 +1,5 @@
 (ns ordinator.collation
-  (:require [ordinator.login :as login]
-            [ordinator.utils :as utils]
+  (:require [ordinator.utils :as utils]
             [ordinator.tablecell :as tablecell]
             [reagent.core :as r]
             [cljs.core.async :refer [chan <! close!]]
@@ -88,7 +87,6 @@
   (utils/get-allorders! "current")
   (fn []
     [:div
-     [login/header]
      [:div
       [:div [:h2 "Entire collated order"]]
       [:div

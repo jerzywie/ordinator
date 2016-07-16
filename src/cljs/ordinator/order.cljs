@@ -1,6 +1,5 @@
 (ns ordinator.order
-  (:require [ordinator.login :as login]
-            [ordinator.utils :as utils]
+  (:require [ordinator.utils :as utils]
             [reagent.core :as r]
             [cljs.core.async :refer [chan <! close!]]
             [cljs-http.client :as http]
@@ -178,7 +177,6 @@
   (let [username (utils/get-username)]
     (cache-order username "current")
     [:div
-     [login/header]
      [:div
       [:div [:h2 "Your current order"]
        [:div [:h3 "Enter new item"]
