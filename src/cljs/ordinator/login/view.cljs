@@ -3,6 +3,19 @@
             [clojure.string :as s]
             [cljs.ordinator.login.messages :as m]))
 
+(defn user-status-widget
+  "Widget to display user status and provide logout link
+   for use in header bar navigation"
+  [ui-channel app]
+  (when-let [username (get-in app [:user :username])]
+    [:ul.nav.navbar-nav.navbar-right
+     [:li.dropdown
+      [:a.dropdown-toggle {:href "#" :data-toggle "dropdown" :role "button" :aria-haspopup "true" :aria-expanded "false"}
+       username [:span.caret]]
+      [:ul.dropdown-menu
+       [:li
+        [:a {:href "#/" :on-click (send! ui-channel (m/->DoLogout))} "sign-out"]]]]]))
+
 (defn input-element
   "An input element which updates its value on change."
   [ui-channel id name type value change-fn]

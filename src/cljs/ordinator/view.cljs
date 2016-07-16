@@ -35,14 +35,7 @@
       [:li [:a {:href (href-for :about-page)} "About"]]
       [:li [:a {:href (href-for :allorders-page)} "View collated order"]]
       [:li [:a {:href (href-for :login-page)} "Login"]]]
-     (when-let [username (get-in app [:login :username])]
-       [:ul.nav.navbar-nav.navbar-right
-        [:li.dropdown
-         [:a.dropdown-toggle {:href "#" :data-toggle "dropdown" :role "button" :aria-haspopup "true" :aria-expanded "false"}
-          username [:span.caret]]
-         [:ul.dropdown-menu
-          [:li
-           [:a {:href "#/" :on-click (send! (forward m/->Login ui-channel) (login-messages/->DoLogout))} "sign-out"]]]]])]]])
+     [login/user-status-widget (forward m/->Login ui-channel) (:login app)]]]])
 
 (defn root [ui-channel app]
   [:div

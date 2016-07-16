@@ -27,8 +27,8 @@
   m/LoginResult
   (process-message [{:keys [status body] :as response} app]
     (case status
-      201 (assoc app :user body :message nil :loggedin true)
-      (assoc app :user nil :message (:reason body) :loggedin false))))
+      201 (assoc app :user body :message nil :loggedin true :username nil :password nil)
+      (assoc app :username nil :password nil :user nil :message (:reason body) :loggedin false))))
 
 (extend-protocol Message
   m/DoLogout
