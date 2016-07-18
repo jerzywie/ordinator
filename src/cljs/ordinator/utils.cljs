@@ -1,11 +1,20 @@
 (ns ordinator.utils
-  (:require [reagent.core :as r]
+  (:require [reagent.core :as reagent]
             [cljs.core.async :refer [chan <! close!]]
             [cljs-http.client :as http]
             [goog.string :as gstring]
             [goog.string.format :as gformat])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
+;; New utils go here
+
+(defn navigate! [hash]
+  (set! (.-hash js/location) hash))
+
+
+;;==============================================================================
+;; TODO remove everything below here, eventually
+;;==============================================================================
 (def appstate
   "appstate has the following structure:
    {:user {:username ...
@@ -24,7 +33,7 @@
              :member2code {member2-order}
           }}}}}"
 
-(r/atom nil))
+(reagent/atom nil))
 
 (defn reset-appstate!
  []

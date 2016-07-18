@@ -1,7 +1,8 @@
 (ns cljs.ordinator.login.processing
   (:require [petrol.core :refer [Message EventSource]]
             [cljs.ordinator.login.messages :as m]
-            [cljs.ordinator.login.rest :as rest]))
+            [cljs.ordinator.login.rest :as rest]
+            [ordinator.utils :as utils]))
 
 (extend-protocol Message
   m/ChangeUsername
@@ -27,7 +28,9 @@
   m/LoginResult
   (process-message [{:keys [status body] :as response} app]
     (case status
-      201 (assoc app :user body :message nil :loggedin true :username nil :password nil)
+      201 (do
+            (utils/navigate! "/")
+            (assoc app :user body :message nil :loggedin true :username nil :password nil))
       (assoc app :username nil :password nil :user nil :message (:reason body) :loggedin false))))
 
 (extend-protocol Message
@@ -44,4 +47,6 @@
   m/LogoutResult
   (process-message [{:keys [status body] :as response} app]
     (case status
-      200 (assoc app :username nil :password nil :user nil :message nil :loggedin false))))
+      200 (do
+            (utils/navigate! "/login")
+            (assoc app :username nil :password nil :user nil :message nil :loggedin false)))))

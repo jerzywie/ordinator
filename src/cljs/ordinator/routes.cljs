@@ -1,18 +1,28 @@
 (ns cljs.ordinator.routes
-  (:require [petrol.core :refer [Message process-message]]
-            [petrol.routing :refer [UrlHistoryEvent]]))
+  (:require [cljs.core.async :refer [to-chan]]
+            [petrol.core :refer [Message process-message EventSource]]
+            [petrol.routing :refer [UrlHistoryEvent]]
+            [cljs.ordinator.messages :as m]))
 
 
-(def app-routes ["" {"#/" {""           :home-page
+(def app-routes ["" {"#/" {""          :home-page
                           "about"      :about-page
                           "login"      :login-page
                           "order"      :order-page
                           "allorders"  :allorders-page}}])
 
 (extend-protocol Message
+
   UrlHistoryEvent
   (process-message [{view :view} app]
-    (assoc app :view view)))
+    (let [loggedin (get-in app [:login :loggedin])
+          loginhandler {:handler :login-page}]
+      (if loggedin
+        (assoc app :view view)
+        (assoc app :view loginhandler)))))
+
+
+
 
 (defn href-for
   ([handler]
