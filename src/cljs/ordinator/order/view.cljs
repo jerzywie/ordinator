@@ -1,6 +1,7 @@
 (ns cljs.ordinator.order.view
   (:require [petrol.core :refer [send! send-value!]]
             [cljs.ordinator.order.messages :as m]
+            [ordinator.utils :as u]
             [reagent.core :as reagent]
             [clojure.string :as s]
             [goog.string :as gstring]
@@ -14,9 +15,6 @@
 ;;TODO get rid of this state
 (def order-item (reagent/atom nil))
 
-(defn code->key
-  [code]
-  (-> code s/trim s/lower-case keyword))
 
 ;TODO move these and the dupes in collation.cljs into utils
 (defn tonumber
@@ -37,7 +35,8 @@
 
 
 
-(defn render-order-line [{:keys [code origin description packsize price unit quantity estcost]}]
+(defn render-order-line
+  [ui-channel {:keys [code origin description packsize price unit quantity estcost]}]
   [:tr {:id code
         :on-click nil}
    [:td code]
@@ -48,10 +47,10 @@
    [:td.rightjust quantity]
    [:td.rightjust (tonumber estcost)]
    [:td
-    [:button.destroy {:on-click nil}]]
-   ])
+    [:button.destroy {:on-click (send! ui-channel (m/->DeleteOrderLine (u/code->key code)))}]]])
 
-(defn render-order [items]
+(defn render-order
+  [ui-channel items]
   [:div
    [:table.order
     [:thead
@@ -65,9 +64,10 @@
       [:th "Est cost"]
       [:th ""]]]
     (into [:tbody]
-          (map render-order-line (vals items)))]])
+          (map (partial render-order-line ui-channel) (vals items)))]])
 
-(defn root [ui-channel app]
+(defn root
+  [ui-channel app]
   (let [username "jerzy"]
     (fn [ui-channel app]
       ;;(get-catalogue catalog)
@@ -80,5 +80,5 @@
         [:div
          [:h3 "Items"]
          ;;[submit-save-order]
-         [render-order (:items app)]
+         [render-order ui-channel (:items app)]
          ]]])))

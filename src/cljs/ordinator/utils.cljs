@@ -2,6 +2,7 @@
   (:require [reagent.core :as reagent]
             [cljs.core.async :refer [chan <! close!]]
             [cljs-http.client :as http]
+            [clojure.string :as s]
             [goog.string :as gstring]
             [goog.string.format :as gformat])
   (:require-macros [cljs.core.async.macros :refer [go]]))
@@ -11,6 +12,9 @@
 (defn navigate! [hash]
   (set! (.-hash js/location) hash))
 
+(defn code->key
+  [code]
+  (-> code s/trim s/lower-case keyword))
 
 ;;==============================================================================
 ;; TODO remove everything below here, eventually
