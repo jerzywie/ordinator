@@ -1,5 +1,6 @@
 (ns cljs.ordinator.view
   (:require [petrol.core :refer [send! forward]]
+            [cljs.pprint :refer [pprint]]
             [ordinator.utils :as utils]
             [cljs.ordinator.routes :refer [href-for]]
             [cljs.ordinator.messages :as m]
