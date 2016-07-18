@@ -5,14 +5,16 @@
             [cljs.ordinator.processing]
             [cljs.ordinator.view :as view]
             [cljs.ordinator.login.core :as login]
+            [cljs.ordinator.order.core :as order]
             [ordinator.utils :as utils]
             [reagent.core :as reagent :refer [atom]]
             [goog.events :as events]
             [goog.history.EventType :as EventType])
   (:import goog.History))
 
-(def initial-state {:view nil
-                    :login login/initial-state})
+(def initial-state {:view {:handler :login-page}
+                    :login login/initial-state
+                    :order order/initial-state})
 
 (defonce !app (reagent/atom initial-state))
 
