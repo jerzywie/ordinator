@@ -43,4 +43,5 @@
   (watch-channels [order-app app]
     (let [logged-in? (get-in app [:login :loggedin])]
       (when logged-in?
-        #{(to-chan [(m/->Order (order-m/->GetOrder (get-in app [:login :user :username])))])}))))
+        #{(to-chan [(m/->Order (order-m/->GetCatalogue))
+                    (m/->Order (order-m/->GetOrder (get-in app [:login :user :username])))])}))))

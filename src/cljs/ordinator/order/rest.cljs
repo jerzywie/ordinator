@@ -10,3 +10,10 @@
         resource (str "/users/" username "/orders/" orderdate)
         response (http/get resource)]
     (petrol/wrap m/map->OrderResult response)))
+
+(defn read-catalogue
+  []
+   "Get catalogue data."
+   (prn "getting catalogue")
+   (let [response (http/get "/catalogue")]
+     (petrol/wrap m/map->GetCatalogueResult response)))

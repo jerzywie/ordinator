@@ -5,3 +5,7 @@
 (defrecord OrderResult [body])
 
 (defrecord DeleteOrderLine [code])
+
+(defrecord GetCatalogue [])
+
+(defrecord GetCatalogueResult [body])

@@ -17,10 +17,26 @@
 
   m/DeleteOrderLine
   (process-message [{code :code} app]
-    (update-in app [:items] dissoc code)))
+    (update-in app [:items] dissoc code))
+
+  m/GetCatalogue
+  (process-message [_ app]
+    app)
+
+  m/GetCatalogueResult
+  (process-message [{:keys [status body]} app]
+    (when (= status 200)
+      (assoc app :catalogue body))))
+
 
 (extend-protocol EventSource
+
   m/GetOrder
   (watch-channels [{:keys [username]} app]
     (prn "GetOrder [EventSource] username" username)
-    #{(rest/retrieve-order username "current")}))
+    #{(rest/retrieve-order username "current")})
+
+  m/GetCatalogue
+  (watch-channels [_ app]
+    (when (nil? (:catalogue app))
+      #{(rest/read-catalogue)})))
