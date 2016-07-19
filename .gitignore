@@ -14,7 +14,7 @@ dc-sdk.log
 .nrepl-port
 .lein-repl-history
 figwheel_server.log
-resources/Essential_Stock_File.xls
+resources/Essential_Stock_File*
 resources/public/js/out/*
 data-representations.json
 appstate.json
