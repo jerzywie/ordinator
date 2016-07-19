@@ -159,3 +159,7 @@ span.orderinput {
 .destroy {
 	display: block;
 }
+
+.clear-left {
+    clear: left;
+}

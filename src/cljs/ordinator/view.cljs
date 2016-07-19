@@ -44,11 +44,12 @@
 (defn root [ui-channel app]
   [:div
    [header ui-channel app]
-   (case (-> app :view :handler)
-     :about-page [about-page]
-     :order-page [order-page ui-channel app]
-     :allorders-page [allorders-page]
-     :login-page [login-page ui-channel app]
-     [home-page ui-channel app])
-   [:h3 "debug app state"]
-   [:div [:code (pr-str app)]]])
+   [:div
+    (case (-> app :view :handler)
+      :about-page [about-page]
+      :order-page [order-page ui-channel app]
+      :allorders-page [allorders-page]
+      :login-page [login-page ui-channel app]
+      [home-page ui-channel app])]
+   [:h4.clear-left "debug app state"]
+   [:pre.font-size-xsmall (with-out-str (pprint app))]])
