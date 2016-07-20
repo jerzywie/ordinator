@@ -66,17 +66,65 @@
     (into [:tbody]
           (map (partial render-order-line ui-channel) (vals items)))]])
 
+(defn order-input-field
+  [ui-channel id placeholder value on-change-message]
+  [:div.orderinput
+   [:label {:for id} (s/capitalize id)]
+   [:input {:type "text"
+            :id id
+            :placeholder placeholder
+            :value value
+            :on-change (send-value! ui-channel on-change-message)}]])
+
+(defn order-readonly-field
+  [id title value]
+  [:div.orderinput
+   [:label {:for id} title]
+   [:span.orderinput value]])
+
+(defn add-order-line
+  [ui-channel app id title enabled]
+  [:div.orderinput
+   [:input.submit {:type "submit"
+                   :id id
+                   :value title
+                   :disabled (not enabled)
+                   :on-click (send! ui-channel (m/->AddItem))}]])
+
+(defn order-entry-form
+  [ui-channel app]
+  (let [{:keys [code codestr description origin packsize price vat
+                unit unitsperpack splits? quantity estcost]} (:order-item app)
+                submit-enabled (and (> price 0) (> quantity 0))]
+    (prn "quantity" quantity)
+    [:div.order-container
+     [:div.clearfix
+      [:span
+       [order-input-field ui-channel "code" "code?" codestr m/->ChangeCode]
+       [order-readonly-field "packsize" "Pack size" packsize]
+       [order-readonly-field "packprice" "Pack price" (str (toprice price) (addvat vat))]
+       [order-readonly-field "unit" "Albany unit" unit]
+       [order-readonly-field "unisperpack" "Units/pack" unitsperpack]
+       [order-readonly-field "unitprice" "Price/unit" (toprice (/ price unitsperpack))]
+       [order-input-field ui-channel "quantity" "in units" quantity m/->ChangeQuantity]
+       [order-readonly-field "packsordered" "Packs ordered" (tonumber (/ quantity unitsperpack))]
+       [order-readonly-field "estcost" "Estimated cost" (toprice estcost)]
+       [add-order-line ui-channel app "add" "Add" submit-enabled]]]
+     [:div.clearfix
+      [:span
+       [:div.orderinput
+        [:span.origin.orderinput origin]
+        [:span.description.orderinput description]]]]]))
+
 (defn root
   [ui-channel app]
   (let [username "jerzy"]
     (fn [ui-channel app]
-      ;;(get-catalogue catalog)
       [:div
        [:div
         [:div [:h2 "Your current order"]
          [:div [:h3 "Enter new item"]
-          ;;[order-item-component]
-          ]]
+          [order-entry-form ui-channel app]]]
         [:div
          [:h3 "Items"]
          ;;[submit-save-order]

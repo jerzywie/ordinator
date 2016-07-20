@@ -9,3 +9,9 @@
 (defrecord GetCatalogue [])
 
 (defrecord GetCatalogueResult [body])
+
+(defrecord ChangeCode [codestr])
+
+(defrecord ChangeQuantity [quantity])
+
+(defrecord AddItem [])
