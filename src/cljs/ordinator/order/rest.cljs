@@ -17,3 +17,13 @@
    (prn "getting catalogue")
    (let [response (http/get "/catalogue")]
      (petrol/wrap m/map->GetCatalogueResult response)))
+
+(defn save-order
+  [username orderdate order-items]
+  "Save order data."
+  (prn "rest/save order")
+  (let [resource (str "/users/" username "/orders/" orderdate)
+        response (http/put resource
+                           {:json-params {:user (keyword username) :orderdate (keyword orderdate)
+                                          :items order-items}})]
+    (petrol/wrap m/map->SaveOrderResult response)))

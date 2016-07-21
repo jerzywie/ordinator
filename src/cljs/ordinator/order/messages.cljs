@@ -15,3 +15,7 @@
 (defrecord ChangeQuantity [quantity])
 
 (defrecord AddItem [])
+
+(defrecord SaveOrder [])
+
+(defrecord SaveOrderResult [body])

@@ -66,6 +66,15 @@
     (into [:tbody]
           (map (partial render-order-line ui-channel) (vals items)))]])
 
+(defn submit-save-order
+  [ui-channel]
+  [:div.orderinput.ordersubmit
+   [:input.submit {:type "submit"
+                   :id "saveorder"
+                   :value "Save"
+                   :on-click (send! ui-channel (m/->SaveOrder))}]])
+
+
 (defn order-input-field
   [ui-channel id placeholder value on-change-message]
   [:div.orderinput
@@ -127,6 +136,6 @@
           [order-entry-form ui-channel app]]]
         [:div
          [:h3 "Items"]
-         ;;[submit-save-order]
+         [submit-save-order ui-channel]
          [render-order ui-channel (:items app)]
          ]]])))

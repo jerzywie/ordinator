@@ -47,7 +47,16 @@
     (let [{:keys [order-item items]} app
           code (u/code->key (:code order-item))
           items (assoc items code order-item)]
-      (assoc app :items items :order-item nil))))
+      (assoc app :items items :order-item nil :isdirty true)))
+
+  m/SaveOrder
+  (process-message [_ app]
+    app)
+
+  m/SaveOrderResult
+  (process-message [{:keys [status]} app]
+    (when (= status 200)
+      (assoc app :isdirty false))))
 
 
 (extend-protocol EventSource
@@ -60,4 +69,11 @@
   m/GetCatalogue
   (watch-channels [_ app]
     (when (nil? (:catalogue app))
-      #{(rest/read-catalogue)})))
+      #{(rest/read-catalogue)}))
+
+  m/SaveOrder
+  (watch-channels [_ app]
+    (let [username (:user app)
+          orderdate "current"
+          order-items (:items app)]
+      #{(rest/save-order username orderdate order-items)})))
