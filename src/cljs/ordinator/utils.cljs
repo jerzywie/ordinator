@@ -16,6 +16,32 @@
   [code]
   (-> code s/trim s/lower-case keyword))
 
+(defn tocurrency
+  "Format a number for currency display (2 digits. Parentheses when negative)"
+  [v]
+  (double v))
+
+(defn tonumber
+  ([v curr]
+    (cond
+     (nil? v) ""
+     (js/isNaN v) ""
+     v (gstring/format "%s%0.2f" curr v)
+     :else ""))
+  ([v]
+   (tonumber v "")))
+
+(defn toprice [p]
+  (tonumber p "£"))
+
+(defn addvat [v]
+  (if (= v "Z") " +VAT" ""))
+
+(defn has-role?
+  [app role]
+  (when (get-in app [:login :loggedin])
+    (some #{role} (get-in app [:login :user :roles]))))
+
 ;;==============================================================================
 ;; TODO remove everything below here, eventually
 ;;==============================================================================
@@ -39,65 +65,7 @@
 
 (reagent/atom nil))
 
-(defn reset-appstate!
- []
- (reset! appstate nil))
 
-(defn logged-in?
-  []
-  (not (nil? (:user @appstate))))
-
-(defn get-username
-  []
-  (when (logged-in?)
-    (get-in @appstate [:user :username])))
-
-(defn has-role?
-  [role]
-  (when (logged-in?)
-    (some #{role} (get-in appstate [:user :roles]))))
-
-(defn get-message
-  []
-  (:message @appstate))
-
-(defn get-order-items
-  []
-  (:order @appstate))
-
-(defn get-order! [user order-date]
-  "Get order data.
-   result is the ratom to hold the data"
-  (go
-    (when (nil? (get-order-items))
-      (prn "getting order")
-      (let [user (get-username)
-            orderdate "current"
-            path "/users/%s/orders/%s"
-            resource (gstring/format path user orderdate)
-            {:keys [status body] :as response} (<! (http/get resource))]
-        (swap! appstate assoc  :order (:items body))))))
-
-(defn delete-order-item
-  [code]
-  (swap! appstate update-in [:order] dissoc code))
-
-(defn add-order-item
-  [code value]
-  (swap! appstate assoc-in [:order code] value))
-
-(defn save-order []
-  "Save order data."
-  (prn "saving order.1")
-  (when-let [order-items (get-order-items)]
-    (let [user (get-username)
-          orderdate "current"
-          path "/users/%s/orders/%s"
-          resource (gstring/format path user orderdate)]
-      (prn "saving order")
-      (http/put resource
-                {:json-params {:user (keyword user) :orderdate (keyword orderdate)
-                               :items order-items}}))))
 
 (defn all-orders
   []

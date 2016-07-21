@@ -7,34 +7,6 @@
             [goog.string :as gstring]
             [goog.string.format :as gformat]))
 
-(defn tocurrency
-  "Format a number for currency display (2 digits. Parentheses when negative)"
-  [v]
-  (double v))
-
-;;TODO get rid of this state
-(def order-item (reagent/atom nil))
-
-
-;TODO move these and the dupes in collation.cljs into utils
-(defn tonumber
-  ([v curr]
-    (cond
-     (nil? v) ""
-     (js/isNaN v) ""
-     v (gstring/format "%s%0.2f" curr v)
-     :else ""))
-  ([v]
-   (tonumber v "")))
-
-(defn toprice [p]
-  (tonumber p "£"))
-
-(defn addvat [v]
-  (if (= v "Z") " +VAT" ""))
-
-
-
 (defn render-order-line
   [ui-channel {:keys [code origin description packsize price unit quantity estcost]}]
   [:tr {:id code
@@ -42,10 +14,10 @@
    [:td code]
    [:td (s/trim (str origin " " description))]
    [:td packsize]
-   [:td.rightjust (tonumber price)]
+   [:td.rightjust (u/tonumber price)]
    [:td unit]
    [:td.rightjust quantity]
-   [:td.rightjust (tonumber estcost)]
+   [:td.rightjust (u/tonumber estcost)]
    [:td
     [:button.destroy {:on-click (send! ui-channel (m/->DeleteOrderLine (u/code->key code)))}]]])
 
@@ -111,13 +83,13 @@
       [:span
        [order-input-field ui-channel "code" "code?" codestr m/->ChangeCode]
        [order-readonly-field "packsize" "Pack size" packsize]
-       [order-readonly-field "packprice" "Pack price" (str (toprice price) (addvat vat))]
+       [order-readonly-field "packprice" "Pack price" (str (u/toprice price) (u/addvat vat))]
        [order-readonly-field "unit" "Albany unit" unit]
        [order-readonly-field "unisperpack" "Units/pack" unitsperpack]
-       [order-readonly-field "unitprice" "Price/unit" (toprice (/ price unitsperpack))]
+       [order-readonly-field "unitprice" "Price/unit" (u/toprice (/ price unitsperpack))]
        [order-input-field ui-channel "quantity" "in units" quantity m/->ChangeQuantity]
-       [order-readonly-field "packsordered" "Packs ordered" (tonumber (/ quantity unitsperpack))]
-       [order-readonly-field "estcost" "Estimated cost" (toprice estcost)]
+       [order-readonly-field "packsordered" "Packs ordered" (u/tonumber (/ quantity unitsperpack))]
+       [order-readonly-field "estcost" "Estimated cost" (u/toprice estcost)]
        [add-order-line ui-channel app "add" "Add" submit-enabled]]]
      [:div.clearfix
       [:span
