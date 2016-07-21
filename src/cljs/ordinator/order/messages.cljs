@@ -4,6 +4,8 @@
 
 (defrecord OrderResult [body])
 
+(defrecord EditOrderLine [code])
+
 (defrecord DeleteOrderLine [code])
 
 (defrecord GetCatalogue [])

@@ -20,6 +20,10 @@
   (process-message [{code :code} app]
     (update-in app [:items] dissoc code))
 
+  m/EditOrderLine
+  (process-message [{code :code} app]
+    (assoc app :order-item (get-in app [:items code])))
+
   m/GetCatalogue
   (process-message [_ app]
     app)

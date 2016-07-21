@@ -38,7 +38,7 @@
 (defn render-order-line
   [ui-channel {:keys [code origin description packsize price unit quantity estcost]}]
   [:tr {:id code
-        :on-click nil}
+        :on-click (send! ui-channel (m/->EditOrderLine (u/code->key code)))}
    [:td code]
    [:td (s/trim (str origin " " description))]
    [:td packsize]
