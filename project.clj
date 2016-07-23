@@ -154,11 +154,12 @@
                    :source-paths ["env/dev/clj"]
 
                    :figwheel {:http-server-root "public"
-                              :server-port 8080
+                              :server-port 8088
                               :nrepl-port 7002
                               :nrepl-middleware ["cemerick.piggieback/wrap-cljs-repl"]
                               :css-dirs ["resources/public/css"]
-                              :ring-handler ordinator.web/app}
+                              ;:ring-handler ordinator.web/app
+                              }
 
                    :cljsbuild {:builds {:app {:source-paths ["env/dev/cljs"]
                                               :compiler {:main "ordinator.dev"
