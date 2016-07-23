@@ -60,7 +60,7 @@
   [user orderdate]
   (let [order (db/get-user-order user orderdate)]
     {:status 200
-     :body order}))
+     :body (assoc order :user user :orderdate orderdate)}))
 
 (defn save-user-order
   [{:keys [route-params body-params]}]
