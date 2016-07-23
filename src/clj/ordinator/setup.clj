@@ -1,7 +1,8 @@
 (ns ordinator.setup
   (:require [ordinator
              [web :as web]
-             [dynamo :as dynamo]]
+             [dynamo :as dynamo]
+             [catalogue :as cat]]
             [clojure.string :as str]
             [environ.core :refer [env]]
             [metrics.core :refer [default-registry]]
@@ -49,6 +50,7 @@
   (configure-graphite-appender)
   (setup/start-graphite-reporting {:graphite-prefix (str/join "." [(env :environment-name) (env :service-name) (env :box-id setup/hostname)])})
   (dynamo/ensure-tables)
+  (cat/update-catalogue)
   (reset! server (start-server)))
 
 (defn stop

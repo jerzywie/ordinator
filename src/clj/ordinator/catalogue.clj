@@ -30,6 +30,7 @@
 (defn update-catalogue
   []
   (let [raw-data (read-cat-file)]
+    (prn "raw-cat-data" raw-data)
     (->> raw-data
          (drop 1)
          (map (fn [{:keys [packsize] :as m}] (merge m (get-units packsize))))

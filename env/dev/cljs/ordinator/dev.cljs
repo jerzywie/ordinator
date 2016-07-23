@@ -5,6 +5,6 @@
 (enable-console-print!)
 
 (figwheel/watch-and-reload
-  :websocket-url "ws://localhost:8080/figwheel-ws")
+  :websocket-url "ws://localhost:8088/figwheel-ws")
 
 (core/init!)
