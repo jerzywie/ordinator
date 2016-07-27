@@ -6,7 +6,8 @@
             [cljs.ordinator.messages :as m]
             [cljs.ordinator.login.messages :as login-messages :refer [DoLogout]]
             [cljs.ordinator.login.view :as login-view]
-            [cljs.ordinator.order.view :as order-view]))
+            [cljs.ordinator.order.view :as order-view]
+            [cljs.ordinator.allorders.view :as allorders-view]))
 
 (defn sign-out! [])
 
@@ -20,8 +21,9 @@
   [:div
    [order-view/root (forward m/->Order ui-channel) (:order app)]])
 
-(defn allorders-page []
-  (fn [] [:div "all-orders-page"]))
+(defn allorders-page [ui-channel app]
+  [:div
+   [allorders-view/root (forward m/->AllOrders ui-channel) (:allorders app)]])
 
 (defn login-page [ui-channel app]
   [:div
@@ -48,7 +50,7 @@
     (case (-> app :view :handler)
       :about-page [about-page]
       :order-page [order-page ui-channel app]
-      :allorders-page [allorders-page]
+      :allorders-page [allorders-page ui-channel app]
       :login-page [login-page ui-channel app]
       [home-page ui-channel app])]
    [:h4.clear-left "debug app state"]

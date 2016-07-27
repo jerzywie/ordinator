@@ -9,8 +9,10 @@
             [petrol.routing :refer [UrlHistoryEvent]]
             [cljs.ordinator.messages :as m]
             [cljs.ordinator.order.messages :as order-m]
+            [cljs.ordinator.allorders.messages :as allorders-m]
             [cljs.ordinator.login.processing]
-            [cljs.ordinator.order.processing]))
+            [cljs.ordinator.order.processing]
+            [cljs.ordinator.allorders.processing]))
 
 (extend-protocol Message
 
@@ -20,15 +22,19 @@
 
   m/Order
   (process-message [{:keys [submessage]} app]
-    (process-submessage submessage app [:order])))
+    (process-submessage submessage app [:order]))
+
+  m/AllOrders
+  (process-message [{:keys [submessage]} app]
+    (process-submessage submessage app [:allorders])))
 
 (extend-protocol EventSource
 
   UrlHistoryEvent
   (watch-channels [{current-view :view} {:keys [view] :as app}]
-    (prn "routes UHE current-view" current-view "view" view "app" app)
     (case (:handler current-view)
       :order-page #{(to-chan [(m/->NavigateToOrder (:order app))])}
+      :allorders-page #{(to-chan [(m/->NavigateToAllOrders (:allorders app))])}
       nil))
 
   m/Login
@@ -39,9 +45,19 @@
   (watch-channels [{:keys [submessage]} app]
     (watch-subchannels submessage app [:order] m/->Order))
 
+  m/AllOrders
+  (watch-channels [{:keys [submessage]} app]
+    (watch-subchannels submessage app [:allorders] m/->AllOrders))
+
   m/NavigateToOrder
-  (watch-channels [order-app app]
+  (watch-channels [_ app]
     (let [logged-in? (get-in app [:login :loggedin])]
       (when logged-in?
         #{(to-chan [(m/->Order (order-m/->GetCatalogue))
-                    (m/->Order (order-m/->GetOrder (get-in app [:login :user :username])))])}))))
+                    (m/->Order (order-m/->GetOrder (get-in app [:login :user :username])))])})))
+
+  m/NavigateToAllOrders
+  (watch-channels [_ app]
+    (let [logged-in? (get-in app [:login :loggedin])]
+      (when logged-in?
+        #{(to-chan [(m/->AllOrders (allorders-m/->GetAllOrders "current"))])}))))
