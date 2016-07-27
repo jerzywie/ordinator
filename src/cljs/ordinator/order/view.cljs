@@ -77,7 +77,6 @@
   (let [{:keys [code codestr description origin packsize price vat
                 unit unitsperpack splits? quantity estcost]} (:order-item app)
                 submit-enabled (and (> price 0) (> quantity 0))]
-    (prn "quantity" quantity)
     [:div.order-container
      [:div.clearfix
       [:span
