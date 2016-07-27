@@ -32,7 +32,7 @@
                                log4j
                                org.clojure/core.cache]]
                  [prone "0.8.2"]
-                 [petrol "0.1.2"]
+                 [petrol "0.1.3"]
                  [reagent "0.5.1"]
                  [reagent-utils "0.1.7"]
                  [cljs-http "0.1.37"
