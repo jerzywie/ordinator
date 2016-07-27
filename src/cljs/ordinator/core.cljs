@@ -18,15 +18,6 @@
 
 (defonce !app (reagent/atom initial-state))
 
-;; TODO remove all these page functions
-;;(defn home-page [] (let [username (utils/get-username)] [:div [login/header] [:h2 "Welcome to Ordinator " username]]))
-
-;;(defn login-page [] [login/render-login-page])
-
-;;(defn order-page []  [order/render-order-page])
-
-;;(defn allorders-page []  [col/render-allorders-page])
-
 ;; figwheel reload-hook
 (defn reload-hook
   []
