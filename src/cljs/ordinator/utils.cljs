@@ -41,3 +41,7 @@
   [app role]
   (when (get-in app [:login :loggedin])
     (some #{role} (get-in app [:login :user :roles]))))
+
+(defn cost-to-user
+  [user-quantity units-per-pack pack-price]
+  (* (/ user-quantity units-per-pack) pack-price))

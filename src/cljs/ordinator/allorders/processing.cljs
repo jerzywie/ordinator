@@ -31,7 +31,9 @@
   (process-message [{:keys [member quantity]} app]
     (prn "ChangeQantity member" member "quantity" quantity)
     (let [code (:editing app)
-          qty-cost {:quantity quantity :estcost 123.45}]
+          {:keys [unitsperpack price]} (get-in app [:items code :itemdata])
+          estcost (u/cost-to-user quantity unitsperpack price)
+          qty-cost {:quantity quantity :estcost estcost}]
       (assoc-in app [:items code :orders member] qty-cost)))
 
   m/KeyEvent

@@ -42,7 +42,7 @@
   m/ChangeQuantity
   (process-message [{:keys [quantity]} app]
     (let [{:keys [unitsperpack price]} (:order-item app)
-          estcost (* (/ quantity unitsperpack) price)]
+          estcost (u/cost-to-user quantity unitsperpack price)]
       (prn "ChangeQuantity upp price quantity estcost" unitsperpack price quantity estcost)
       (update-in app [:order-item] assoc :estcost estcost :quantity quantity)))
 
