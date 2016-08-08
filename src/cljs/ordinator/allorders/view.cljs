@@ -10,11 +10,11 @@
 
 (defn render-order-details
   [ui-channel app code member focus {:keys [quantity estcost]}]
-  [tablecell/render-editable-cell {:key member
+  [tablecell/render-table-cell {:key member
                                    :ui-channel ui-channel
                                    :value quantity
                                    :class "qty"
-                                   :editingfn (= (:editing app) (u/code->key code))
+                                   :iseditable? (= (:editing app) (u/code->key code))
                                    :givefocus? focus}])
 
 (defn render-collation-line

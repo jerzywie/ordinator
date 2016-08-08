@@ -3,34 +3,31 @@
             [petrol.core :refer [send! send-value! send-key!]]
             [cljs.ordinator.allorders.messages :as m]))
 
-(defn make-key
-  [code pers]
-  (str code "-" pers))
+(defn cell-text-input
+  [props]
+  (reagent/create-class
+   {:component-did-mount
+    (if (:focus props) #(.focus (reagent/dom-node %)) nil)
 
-(defn cell-input
-  [{:keys [ui-channel key value class] :as props}]
-  [:input {:type "text"
-           :class class
-           :value value
-           :on-key-down (send-key! ui-channel m/->KeyEvent (fn [c] (some #{c} [27])))
-           :on-change (send-value! ui-channel (partial m/->ChangeQuantity key))
-           }])
+    :display-name "cell-input-component"
 
-(def cell-input-give-focus (with-meta cell-input
-                             {:component-did-mount #(.focus (reagent/dom-node %))}))
+    :reagent-render
+    (fn [{:keys [ui-channel key value class]}]
+      [:input {:type "text"
+               :class class
+               :value value
+               :on-key-down (send-key! ui-channel m/->KeyEvent (fn [c] (some #{c} [27])))
+               :on-change (send-value! ui-channel (partial m/->ChangeQuantity key))}])}))
 
-(defn render-cell
-  [{:keys [key value class]}]
-  [:td {:class class} value])
-
-(defn render-editable-cell
-  [{:keys [ui-channel key value class editingfn givefocus?]}]
-  (let [spanclass (str class (if editingfn " hide"))
-        editclass (str class " edit" (if-not editingfn " hide"))
-        renderfn (if givefocus? cell-input-give-focus cell-input)]
+(defn render-table-cell
+  [{:keys [ui-channel key value class iseditable? givefocus?]}]
+  (let [spanclass (str class (if iseditable? " hide"))
+        editclass (str class " edit")]
     [:td {:key key}
-     [:span {:class spanclass} value]
-     [renderfn {:ui-channel ui-channel
-                :class editclass
-                :value value
-                :key key}]]))
+     (if iseditable?
+       [cell-text-input {:ui-channel ui-channel
+                         :class editclass
+                         :value value
+                         :key key
+                         :focus givefocus?}]
+       [:span {:class spanclass} value])]))
