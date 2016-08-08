@@ -21,3 +21,4 @@ appstate.json
 resources/public/css/site-unused.css
 *.min.css
 .#*
+checkouts/
