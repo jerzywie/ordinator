@@ -7,7 +7,7 @@
   [props]
   (reagent/create-class
    {:component-did-mount
-    (if (:focus props) #(.focus (reagent/dom-node %)) nil)
+    (if (:focus props) #(.select (reagent/dom-node %)) nil)
 
     :display-name "cell-input-component"
 
