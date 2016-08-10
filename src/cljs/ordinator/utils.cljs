@@ -34,6 +34,13 @@
 (defn toprice [p]
   (tonumber p "£"))
 
+(defn tofloat
+  [v]
+  (cond
+    (s/blank? v) 0
+    (js/isNaN v) 0
+    :else (js/parseFloat v)))
+
 (defn addvat [v]
   (if (= v "Z") " +VAT" ""))
 

@@ -30,7 +30,8 @@
   m/ChangeQuantity
   (process-message [{:keys [member quantity]} app]
     (prn "ChangeQantity member" member "quantity" quantity)
-    (let [code (:editing app)
+    (let [quantity (u/tofloat quantity)
+          code (:editing app)
           {:keys [unitsperpack price]} (get-in app [:items code :itemdata])
           estcost (u/cost-to-user quantity unitsperpack price)
           qty-cost {:quantity quantity :estcost estcost}]
