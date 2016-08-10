@@ -6,8 +6,16 @@
 
 (defrecord EditItem [code])
 
-(defrecord StopEditing [])
+(defrecord RevertEditing [])
 
 (defrecord ChangeQuantity [member quantity])
 
 (defrecord KeyEvent [c])
+
+(defrecord DeleteItem [code])
+
+(defrecord DeleteItemReally [code])
+
+(defrecord SaveItem [code])
+
+(defrecord DoNothing [code]) ; this is temporary
