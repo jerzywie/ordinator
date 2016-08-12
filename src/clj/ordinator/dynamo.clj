@@ -26,7 +26,7 @@
                 {:user user :orderdate orderdate}))
 
 (defn save-user-order
-  [{:keys [user orderdate items]}]
+  [user orderdate items]
   (prn "save-user-order::user: " user " orderdate: " orderdate " items" items)
   (far/put-item client-opts
                 :orders

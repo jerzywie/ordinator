@@ -5,19 +5,19 @@
             [ordinator.utils :as u]))
 
 (defn make-key
-  [code member]
-  (str code "-" (name member)))
+  [first second]
+  (str (name first) "-" (name second)))
 
 (defn action-button
   [ui-channel code value message]
   [:input.submit {:type "submit"
-                  :id (str code "-" value)
+                  :id (make-key code value)
                   :value value
-                  :on-click (send! ui-channel (message (u/code->key code)))}])
+                  :on-click (send! ui-channel (message code))}])
 
 (defn destroy-button
   [ui-channel code]
-  [:button.destroy {:on-click (send! ui-channel (m/->DoNothing (u/code->key code)))}])  ; m/->DeleteItem
+  [:button.destroy {:on-click (send! ui-channel (m/->DoNothing code))}])  ; m/->DeleteItem
 
 (defn non-edit-buttons
   [ui-channel code]
@@ -37,20 +37,21 @@
 (defn render-order-details
   [ui-channel app code member iseditable? focus {:keys [quantity estcost]}]
   [tablecell/render-table-cell {:key member
-                                   :ui-channel ui-channel
-                                   :value quantity
-                                   :class "qty"
-                                   :iseditable? iseditable?
-                                   :givefocus? focus}])
+                                :ui-channel ui-channel
+                                :value quantity
+                                :class "qty"
+                                :iseditable? iseditable?
+                                :givefocus? focus}])
 
 (defn render-collation-line
-  [ui-channel app [key {:keys [itemdata orders]}]]
-  (let [{:keys [code description packsize price unit]} itemdata
+  [ui-channel app [code {:keys [itemdata orders]}]]
+  (let [codestr (u/key->code code)
+        {:keys [description packsize price unit]} itemdata
         members [:jerzy :sally :matthew]
-        editable? (= (:editing app) (u/code->key code))]
-    [:tr {:id code
-          :on-double-click (send! ui-channel (m/->EditItem (u/code->key code)))}
-     [:td code]
+        editable? (= (:editing app) code)]
+    [:tr {:id codestr
+          :on-double-click (send! ui-channel (m/->EditItem code))}
+     [:td codestr]
      [:td description]
      [:td packsize]
      [:td.rightjust (u/tonumber price)]

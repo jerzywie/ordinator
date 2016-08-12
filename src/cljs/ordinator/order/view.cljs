@@ -8,10 +8,10 @@
             [goog.string.format :as gformat]))
 
 (defn render-order-line
-  [ui-channel {:keys [code origin description packsize price unit quantity estcost]}]
-  [:tr {:id code
-        :on-click (send! ui-channel (m/->EditOrderLine (u/code->key code)))}
-   [:td code]
+  [ui-channel [code {:keys [codestr origin description packsize price unit quantity estcost] :as line}]]
+  [:tr {:id codestr
+        :on-click (send! ui-channel (m/->EditOrderLine code))}
+   [:td codestr]
    [:td (s/trim (str origin " " description))]
    [:td packsize]
    [:td.rightjust (u/tonumber price)]
@@ -19,7 +19,7 @@
    [:td.rightjust quantity]
    [:td.rightjust (u/tonumber estcost)]
    [:td
-    [:button.destroy {:on-click (send! ui-channel (m/->DeleteOrderLine (u/code->key code)))}]]])
+    [:button.destroy {:on-click (send! ui-channel (m/->DeleteOrderLine code))}]]])
 
 (defn render-order
   [ui-channel items]
@@ -36,7 +36,7 @@
       [:th "Est cost"]
       [:th ""]]]
     (into [:tbody]
-          (map (partial render-order-line ui-channel) (vals items)))]])
+          (map (partial render-order-line ui-channel) items))]])
 
 (defn submit-save-order
   [ui-channel]
@@ -74,7 +74,7 @@
 
 (defn order-entry-form
   [ui-channel app]
-  (let [{:keys [code codestr description origin packsize price vat
+  (let [{:keys [codestr description origin packsize price vat
                 unit unitsperpack splits? quantity estcost]} (:order-item app)
                 submit-enabled (and (> price 0) (> quantity 0))]
     [:div.order-container
@@ -108,5 +108,4 @@
         [:div
          [:h3 "Items"]
          [submit-save-order ui-channel]
-         [render-order ui-channel (:items app)]
-         ]]])))
+         [render-order ui-channel (:items app)]]]])))

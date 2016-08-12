@@ -3,7 +3,7 @@
              [catalogue :as cat]
              [auth :refer [wrap-json-authenticate login-form]]
              [page-frame :refer [page-frame]]
-             [dynamo :as db]
+             [order :as order]
              [collation :as col]]
             [compojure
              [core :refer [defroutes GET PUT POST DELETE]]
@@ -58,13 +58,14 @@
 
 (defn get-user-order
   [user orderdate]
-  (let [order (db/get-user-order user orderdate)]
+  (let [order (order/get-user-order user orderdate)]
+    (prn "get-user-order order" order)
     {:status 200
-     :body (assoc order :user user :orderdate orderdate)}))
+     :body order}))
 
 (defn save-user-order
   [{:keys [route-params body-params]}]
-  (db/save-user-order (merge route-params body-params))
+  (order/save-user-order (merge route-params body-params))
   {:status 200})
 
 (defn get-orders

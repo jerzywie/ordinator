@@ -2,7 +2,7 @@
   (:use [dk.ative.docjure.spreadsheet] :reload-all)
   (:require [clojure.string :as s]))
 
-(def cols {:B :code :C :description :D :origin :F :packsize :G :price :H :vat})
+(def cols {:B :codestr :C :description :D :origin :F :packsize :G :price :H :vat})
 
 (def raw-cat-file "resources/Essential_Stock_File.xls")
 (def stock-sheet-name "Stock_Full")
@@ -34,9 +34,13 @@
     (->> raw-data
          (drop 1)
          (map (fn [{:keys [packsize] :as m}] (merge m (get-units packsize))))
-         (reduce (fn [m {:keys [code] :as line}]
-                   (let [codekey (-> code s/trim s/lower-case keyword)]
+         (reduce (fn [m {:keys [codestr] :as line}]
+                   (let [codekey (-> codestr s/trim s/lower-case keyword)]
                      (assoc m codekey line))) {})
          (reset! catalogue-data))))
 
 (defn get-catalogue [] (prn "get-cat") @catalogue-data)
+
+(defn get-catalogue-item
+  [code]
+  (code @catalogue-data))

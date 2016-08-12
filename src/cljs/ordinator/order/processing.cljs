@@ -2,6 +2,7 @@
   (:require [petrol.core :refer [Message EventSource]]
             [cljs.ordinator.order.messages :as m]
             [cljs.ordinator.order.rest :as rest]
+            [clojure.string :refer [upper-case]]
             [ordinator.utils :as u]))
 
 (extend-protocol Message
@@ -41,7 +42,8 @@
 
   m/ChangeQuantity
   (process-message [{:keys [quantity]} app]
-    (let [{:keys [unitsperpack price]} (:order-item app)
+    (let [quantity (u/tofloat quantity)
+          {:keys [unitsperpack price]} (:order-item app)
           estcost (u/cost-to-user quantity unitsperpack price)]
       (prn "ChangeQuantity upp price quantity estcost" unitsperpack price quantity estcost)
       (update-in app [:order-item] assoc :estcost estcost :quantity quantity)))
@@ -49,7 +51,9 @@
   m/AddItem
   (process-message [_ app]
     (let [{:keys [order-item items]} app
-          code (u/code->key (:code order-item))
+          codestr (upper-case (:codestr order-item))
+          code (u/code->key codestr)
+          order-item (assoc order-item :codestr codestr)
           items (assoc items code order-item)]
       (assoc app :items items :order-item nil :isdirty true)))
 
