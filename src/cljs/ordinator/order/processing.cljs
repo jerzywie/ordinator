@@ -37,24 +37,24 @@
   m/ChangeCode
   (process-message [{:keys [codestr]} app]
     (let [code (u/code->key codestr)
-          itemdata (assoc (code (:catalogue app)) :estcost nil :quantity nil :codestr codestr)]
-      (assoc app :order-item itemdata)))
+          itemdata (assoc (code (:catalogue app)) :codestr codestr)]
+      (assoc app :order-item {:itemdata itemdata :order {:estcost nil :quantity nil}})))
 
   m/ChangeQuantity
   (process-message [{:keys [quantity]} app]
     (let [quantity (u/tofloat quantity)
-          {:keys [unitsperpack price]} (:order-item app)
+          {{:keys [unitsperpack price]} :itemdata} (:order-item app)
           estcost (u/cost-to-user quantity unitsperpack price)]
       (prn "ChangeQuantity upp price quantity estcost" unitsperpack price quantity estcost)
-      (update-in app [:order-item] assoc :estcost estcost :quantity quantity)))
+      (update-in app [:order-item :order] assoc :estcost estcost :quantity quantity)))
 
   m/AddItem
   (process-message [_ app]
-    (let [{:keys [order-item items]} app
-          codestr (upper-case (:codestr order-item))
+    (let [{{:keys [itemdata order]} :order-item items :items} app
+          codestr (upper-case (:codestr itemdata))
           code (u/code->key codestr)
-          order-item (assoc order-item :codestr codestr)
-          items (assoc items code order-item)]
+          itemdata (assoc itemdata :codestr codestr)
+          items (assoc items code {:itemdata itemdata :order order})]
       (assoc app :items items :order-item nil :isdirty true)))
 
   m/SaveOrder

@@ -8,7 +8,9 @@
             [goog.string.format :as gformat]))
 
 (defn render-order-line
-  [ui-channel [code {:keys [codestr origin description packsize price unit quantity estcost] :as line}]]
+  [ui-channel [code {{:keys [estcost quantity]} :order
+                     {:keys [codestr description origin packsize price vat
+                             unit unitsperpack splits?]} :itemdata}]]
   [:tr {:id codestr
         :on-click (send! ui-channel (m/->EditOrderLine code))}
    [:td codestr]
@@ -74,38 +76,39 @@
 
 (defn order-entry-form
   [ui-channel app]
-  (let [{:keys [codestr description origin packsize price vat
-                unit unitsperpack splits? quantity estcost]} (:order-item app)
-                submit-enabled (and (> price 0) (> quantity 0))]
-    [:div.order-container
-     [:div.clearfix
-      [:span
-       [order-input-field ui-channel "code" "code?" codestr m/->ChangeCode]
-       [order-readonly-field "packsize" "Pack size" packsize]
-       [order-readonly-field "packprice" "Pack price" (str (u/toprice price) (u/addvat vat))]
-       [order-readonly-field "unit" "Albany unit" unit]
-       [order-readonly-field "unisperpack" "Units/pack" unitsperpack]
-       [order-readonly-field "unitprice" "Price/unit" (u/toprice (/ price unitsperpack))]
-       [order-input-field ui-channel "quantity" "in units" quantity m/->ChangeQuantity]
-       [order-readonly-field "packsordered" "Packs ordered" (u/tonumber (/ quantity unitsperpack))]
-       [order-readonly-field "estcost" "Estimated cost" (u/toprice estcost)]
-       [add-order-line ui-channel app "add" "Add" submit-enabled]]]
-     [:div.clearfix
-      [:span
-       [:div.orderinput
-        [:span.origin.orderinput origin]
-        [:span.description.orderinput description]]]]]))
+  (let [{{:keys [estcost quantity]} :order
+         {:keys [codestr description origin packsize price vat
+                 unit unitsperpack splits?]} :itemdata} (:order-item app)
+        submit-enabled (and (> price 0) (> quantity 0))]
+    (prn "order-entry-form codestr" codestr "quantity" quantity "itemdata" itemdata)
+   [:div.order-container
+    [:div.clearfix
+     [:span
+      [order-input-field ui-channel "code" "code?" codestr m/->ChangeCode]
+      [order-readonly-field "packsize" "Pack size" packsize]
+      [order-readonly-field "packprice" "Pack price" (str (u/toprice price) (u/addvat vat))]
+      [order-readonly-field "unit" "Albany unit" unit]
+      [order-readonly-field "unisperpack" "Units/pack" unitsperpack]
+      [order-readonly-field "unitprice" "Price/unit" (u/toprice (/ price unitsperpack))]
+      [order-input-field ui-channel "quantity" "in units" quantity m/->ChangeQuantity]
+      [order-readonly-field "packsordered" "Packs ordered" (u/tonumber (/ quantity unitsperpack))]
+      [order-readonly-field "estcost" "Estimated cost" (u/toprice estcost)]
+      [add-order-line ui-channel app "add" "Add" submit-enabled]]]
+    [:div.clearfix
+     [:span
+      [:div.orderinput
+       [:span.origin.orderinput origin]
+       [:span.description.orderinput description]]]]]))
 
 (defn root
   [ui-channel app]
-  (let [username "jerzy"]
-    (fn [ui-channel app]
+  (fn [ui-channel app]
+    [:div
+     [:div
+      [:div [:h2 "Your current order"]
+       [:div [:h3 "Enter new item"]
+        [order-entry-form ui-channel app]]]
       [:div
-       [:div
-        [:div [:h2 "Your current order"]
-         [:div [:h3 "Enter new item"]
-          [order-entry-form ui-channel app]]]
-        [:div
-         [:h3 "Items"]
-         [submit-save-order ui-channel]
-         [render-order ui-channel (:items app)]]]])))
+       [:h3 "Items"]
+       [submit-save-order ui-channel]
+       [render-order ui-channel (:items app)]]]]))

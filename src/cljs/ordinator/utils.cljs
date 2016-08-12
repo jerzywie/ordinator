@@ -13,8 +13,12 @@
   (set! (.-hash js/location) hash))
 
 (defn code->key
-  [code]
-  (-> code s/trim s/lower-case keyword))
+  [codestr]
+  (-> codestr s/trim s/lower-case keyword))
+
+(defn key->code
+  [codekey]
+  (-> codekey name s/upper-case))
 
 (defn tocurrency
   "Format a number for currency display (2 digits. Parentheses when negative)"

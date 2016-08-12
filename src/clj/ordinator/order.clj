@@ -9,13 +9,15 @@
     {:items nil}))
 
 (defn clean-order-item
-  [[code item]]
-  {code (select-keys item [:quantity :estcost :origin :description :packsize :price
-                           :unit :unitsperpack :vat :splits?])})
+  [[code {:keys [itemdata order]}]]
+  {code {:itemdata (select-keys itemdata [:origin :description :packsize :price
+                                          :unit :unitsperpack :vat :splits?])
+         :order order}})
 
 (defn augment-order-item
-  [[code item]]
-  {code (assoc item :codestr (-> code name upper-case))})
+  [[code {:keys [itemdata order]}]]
+  {code {:itemdata (assoc itemdata :codestr (-> code name upper-case))
+         :order order}})
 
 (defn add-other-fields
   [{:keys [items] :as order}]
