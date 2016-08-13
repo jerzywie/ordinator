@@ -74,6 +74,12 @@
     {:status 200
      :body collation}))
 
+(defn update-orders
+  [{:keys [route-params body-params]}]
+  (prn "update-orders req" (merge route-params body-params))
+  (col/update-order-line (merge route-params body-params))
+  {:status 200})
+
 (defroutes routes
 
   (GET "/healthcheck"
@@ -104,6 +110,9 @@
   (GET "/orders/:orderdate"
        [orderdate]
        (get-orders orderdate))
+
+  (PUT "/orders/:orderdate/:code" req
+       (update-orders req))
 
   (GET "/catalogue"
        [] (get-catalogue))

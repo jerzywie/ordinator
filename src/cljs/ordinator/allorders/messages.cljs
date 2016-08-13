@@ -18,4 +18,6 @@
 
 (defrecord SaveItem [code])
 
+(defrecord SaveItemResult [body])
+
 (defrecord DoNothing [code]) ; this is temporary

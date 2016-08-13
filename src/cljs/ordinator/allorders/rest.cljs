@@ -9,3 +9,12 @@
   (let [resource (str  "/orders/" orderdate)
         response (http/get resource)]
     (petrol/wrap m/map->GetAllOrdersResult response)))
+
+(defn save-order-line
+  "Save a single order-line"
+  [code orders]
+  (prn "save-order-line")
+  (let [resource (str "/orders/current/" code)
+        response (http/put resource
+                           {:json-params {:orders orders}})]
+    (petrol/wrap m/map->SaveItemResult response)))

@@ -54,11 +54,23 @@
 
   m/DoNothing
   (process-message [_ app]
-    app))
+    app)
+
+  m/SaveItem
+  (process-message [_ app]
+    app)
+
+  m/SaveItemResult
+  (process-message [{:keys [status body] :as response} app]
+    (assoc app :editing nil :preeditorders nil)))
 
 
 (extend-protocol EventSource
 
   m/GetAllOrders
   (watch-channels [{:keys [orderdate]} app]
-    #{(rest/get-allorders orderdate)}))
+    #{(rest/get-allorders orderdate)})
+
+  m/SaveItem
+  (watch-channels [{:keys [code]} app]
+    #{(rest/save-order-line (u/key->code code) (get-in app [:items code]))}))

@@ -29,7 +29,7 @@
 (defn edit-buttons
   [ui-channel code]
   [:span
-   [action-button ui-channel code "Save" m/->DoNothing] ; m/->SaveItem
+   [action-button ui-channel code "Save" m/->SaveItem]
    [action-button ui-channel code "Revert" m/->RevertEditing]
    " "
    [destroy-button ui-channel code]])
