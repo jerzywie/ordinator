@@ -68,15 +68,14 @@
   (order/save-user-order (merge route-params body-params))
   {:status 200})
 
-(defn get-orders
+(defn get-all-orders
   [orderdate]
   (let [collation (col/collate-orders orderdate)]
     {:status 200
      :body collation}))
 
-(defn update-orders
+(defn update-all-orders-code
   [{:keys [route-params body-params]}]
-  (prn "update-orders req" (merge route-params body-params))
   (col/update-order-line (merge route-params body-params))
   {:status 200})
 
@@ -109,10 +108,10 @@
 
   (GET "/orders/:orderdate"
        [orderdate]
-       (get-orders orderdate))
+       (get-all-orders orderdate))
 
   (PUT "/orders/:orderdate/:code" req
-       (update-orders req))
+       (update-all-orders-code req))
 
   (GET "/catalogue"
        [] (get-catalogue))

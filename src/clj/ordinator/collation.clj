@@ -35,7 +35,7 @@
   [code itemdata new-order old-order]
   (assoc old-order code {:itemdata itemdata :order new-order}))
 
-(defn update-user-order
+(defn update-user-order-line
   [user code itemdata new-order]
   (let [orderdate "current"]
     (->> (:items (db/get-user-order user orderdate))
@@ -46,4 +46,4 @@
   [{{:keys [itemdata orders]} :orders code :code orderdate :orderdate}]
   (let [code (-> code lower-case keyword)]
     (prn "update-order-line orderdate" orderdate "code" code "itemdata" itemdata "orders" orders)
-    (dorun (map #(update-user-order % code itemdata (% orders)) (keys orders)))))
+    (dorun (map #(update-user-order-line % code itemdata (% orders)) (keys orders)))))
