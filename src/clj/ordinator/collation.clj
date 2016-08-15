@@ -47,3 +47,16 @@
   (let [code (-> code lower-case keyword)]
     (prn "update-order-line orderdate" orderdate "code" code "itemdata" itemdata "orders" orders)
     (dorun (map #(update-user-order-line % code itemdata (% orders)) (keys orders)))))
+
+(defn delete-user-order-line
+  [user orderdate code]
+  (let [remove-code (fn [code map] (dissoc map code))]
+    (->> (:items (db/get-user-order user orderdate))
+         (remove-code code)
+         (db/save-user-order user orderdate))))
+
+(defn delete-order-line
+  [orderdate code]
+  (let [code (-> code lower-case keyword)]
+    (prn "delete-order-line orderdate" orderdate "code" code)
+    (dorun (map #(delete-user-order-line % orderdate code) (user-list)))))

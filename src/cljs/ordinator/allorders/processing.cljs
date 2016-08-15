@@ -29,7 +29,10 @@
   m/EditItem
   (process-message [{:keys [code]} app]
     (prn "EditItem code" code)
-    (assoc app :editing code :preeditorders (get-in app [:items code :orders])))
+    (let [{:keys [deleteconfirm editing]} app]
+      (if-not (u/disable-it deleteconfirm editing code)
+        (assoc app :editing code :preeditorders (get-in app [:items code :orders]))
+        app)))
 
   m/RevertEditing
   (process-message [_ app]
@@ -62,8 +65,23 @@
 
   m/SaveItemResult
   (process-message [{:keys [status body] :as response} app]
-    (assoc app :editing nil :preeditorders nil)))
+    (assoc app :editing nil :preeditorders nil))
 
+  m/ConfirmDeleteItem
+  (process-message [{:keys [code]} app]
+    (assoc app :deleteconfirm code))
+
+  m/CancelDeleteItem
+  (process-message [_ app]
+    (assoc app :deleteconfirm nil))
+
+  m/ReallyDeleteItem
+  (process-message [_ app]
+    app)
+
+  m/ReallyDeleteItemResult
+  (process-message [{:keys [status body] :as response} app]
+    (assoc app :deleteconfirm nil)))
 
 (extend-protocol EventSource
 
@@ -73,4 +91,9 @@
 
   m/SaveItem
   (watch-channels [{:keys [code]} app]
-    #{(rest/save-order-line (u/key->code code) (get-in app [:items code]))}))
+    #{(rest/save-order-line (u/key->code code) (get-in app [:items code]))})
+
+  m/ReallyDeleteItem
+  (watch-channels [{:keys [code]} app]
+    #{(rest/delete-order-line (u/key->code code))
+      (to-chan [(m/->GetAllOrders "current")])}))

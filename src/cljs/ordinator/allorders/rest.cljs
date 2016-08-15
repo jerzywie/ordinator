@@ -18,3 +18,11 @@
         response (http/put resource
                            {:json-params {:orders orders}})]
     (petrol/wrap m/map->SaveItemResult response)))
+
+(defn delete-order-line
+  "Delete a single order-line"
+  [code]
+  (prn "delete-order-line")
+  (let [resource (str "/orders/current/" code)
+        response (http/delete resource)]
+    (petrol/wrap m/map->ReallyDeleteItemResult response)))

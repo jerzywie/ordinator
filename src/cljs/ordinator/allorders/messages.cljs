@@ -12,9 +12,13 @@
 
 (defrecord KeyEvent [c])
 
-(defrecord DeleteItem [code])
+(defrecord ConfirmDeleteItem [code])
 
-(defrecord DeleteItemReally [code])
+(defrecord ReallyDeleteItem [code])
+
+(defrecord ReallyDeleteItemResult [body])
+
+(defrecord CancelDeleteItem [])
 
 (defrecord SaveItem [code])
 

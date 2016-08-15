@@ -7,8 +7,6 @@
             [goog.string.format :as gformat])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
-;; New utils go here
-
 (defn navigate! [hash]
   (set! (.-hash js/location) hash))
 
@@ -56,3 +54,8 @@
 (defn cost-to-user
   [user-quantity units-per-pack pack-price]
   (* (/ user-quantity units-per-pack) pack-price))
+
+(defn disable-it
+  "Used to disable controls based on one or other of two fields being set to a value"
+  [v-one v-two v-three]
+  (or v-one (and v-two (not= v-two v-three))))

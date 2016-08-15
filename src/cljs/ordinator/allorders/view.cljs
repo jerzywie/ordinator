@@ -9,30 +9,34 @@
   (str (name first) "-" (name second)))
 
 (defn action-button
-  [ui-channel code value message]
+  [ui-channel code value disabled? message]
   [:input.submit {:type "submit"
                   :id (make-key code value)
                   :value value
+                  :disabled disabled?
                   :on-click (send! ui-channel (message code))}])
 
 (defn destroy-button
-  [ui-channel code]
-  [:button.destroy {:on-click (send! ui-channel (m/->DoNothing code))}])  ; m/->DeleteItem
+  [ui-channel {:keys [deleteconfirm editing] :as app} code]
+  (let [disabled? (u/disable-it editing deleteconfirm code)]
+    (if (= deleteconfirm code)
+      [:td
+       [action-button ui-channel code "Confirm" disabled? m/->ReallyDeleteItem]
+       [action-button ui-channel code "Cancel" disabled? m/->CancelDeleteItem]]
+      [:td
+       [:button.destroy {:disabled disabled?
+                         :on-click (send! ui-channel (m/->ConfirmDeleteItem code))}]])))
 
 (defn non-edit-buttons
-  [ui-channel code]
-  [:span
-   [action-button ui-channel code "Edit" m/->EditItem]
-   " "
-   [destroy-button ui-channel code]])
+  [ui-channel {:keys [deleteconfirm editing]} code]
+  [:td
+   [action-button ui-channel code "Edit" (u/disable-it deleteconfirm editing code) m/->EditItem]])
 
 (defn edit-buttons
-  [ui-channel code]
-  [:span
-   [action-button ui-channel code "Save" m/->SaveItem]
-   [action-button ui-channel code "Revert" m/->RevertEditing]
-   " "
-   [destroy-button ui-channel code]])
+  [ui-channel {:keys [deleteconfirm editing]} code]
+  [:td
+   [action-button ui-channel code "Save" (u/disable-it deleteconfirm editing code) m/->SaveItem]
+   [action-button ui-channel code "Revert" (u/disable-it deleteconfirm editing code) m/->RevertEditing]])
 
 (defn render-order-details
   [ui-channel app code member iseditable? focus {:keys [quantity estcost]}]
@@ -58,11 +62,10 @@
      [:td unit]
      (map #(render-order-details ui-channel app code %1 editable? (= 0 %2) (%1 orders))
           members (range))
-     [:td
-      (if editable?
-        [edit-buttons ui-channel code]
-        [non-edit-buttons ui-channel code])
-      ]]))
+     (if editable?
+       [edit-buttons ui-channel app code]
+       [non-edit-buttons ui-channel app code])
+     [destroy-button ui-channel app code]]))
 
 (defn render-collated-order
   [ui-channel {:keys [items] :as app}]
@@ -78,7 +81,7 @@
       [:th "Jerzy"]
       [:th "Sally"]
       [:th "Matthew"]
-      [:th ""]]]
+      [:th {:colSpan 2} ""]]]
     (into [:tbody]
           (map (partial render-collation-line ui-channel app) items))]])
 

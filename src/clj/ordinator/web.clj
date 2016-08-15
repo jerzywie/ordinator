@@ -79,6 +79,12 @@
   (col/update-order-line (merge route-params body-params))
   {:status 200})
 
+(defn delete-all-orders-code
+  [orderdate code]
+  (prn "delete-all-orders-code orderdate" orderdate "code" code)
+  (col/delete-order-line orderdate code)
+  {:status 200})
+
 (defroutes routes
 
   (GET "/healthcheck"
@@ -112,6 +118,10 @@
 
   (PUT "/orders/:orderdate/:code" req
        (update-all-orders-code req))
+
+  (DELETE "/orders/:orderdate/:code"
+          [orderdate code]
+          (delete-all-orders-code orderdate code))
 
   (GET "/catalogue"
        [] (get-catalogue))
