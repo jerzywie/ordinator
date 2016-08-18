@@ -20,14 +20,16 @@
                :on-change (send-value! ui-channel (partial m/->ChangeQuantity key))}])}))
 
 (defn render-table-cell
-  [{:keys [ui-channel key value class iseditable? givefocus?]}]
+  [{:keys [ui-channel key value secondary-value class iseditable? givefocus?]}]
   (let [spanclass (str class (if iseditable? " hide"))
         editclass (str class " edit")]
-    [:td {:key key}
-     (if iseditable?
+    (if iseditable?
+      [:td {:key key}
        [cell-text-input {:ui-channel ui-channel
                          :class editclass
                          :value value
                          :key key
                          :focus givefocus?}]
-       [:span {:class spanclass} value])]))
+       [:div.tablecell-line2.rightjust secondary-value]]
+      [:td {:key key}
+       [:span {:class spanclass} value]])))

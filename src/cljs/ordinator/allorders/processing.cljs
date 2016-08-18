@@ -44,8 +44,8 @@
     (prn "ChangeQantity member" member "quantity" quantity)
     (let [quantity (u/tofloat quantity)
           code (:editing app)
-          {:keys [unitsperpack price]} (get-in app [:items code :itemdata])
-          estcost (u/cost-to-user quantity unitsperpack price)
+          {:keys [unitsperpack price vat]} (get-in app [:items code :itemdata])
+          estcost (u/cost-to-user quantity unitsperpack price vat)
           qty-cost {:quantity quantity :estcost estcost}]
       (assoc-in app [:items code :orders member] qty-cost)))
 

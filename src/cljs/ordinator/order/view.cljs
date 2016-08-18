@@ -14,9 +14,12 @@
   [:tr {:id codestr
         :on-click (send! ui-channel (m/->EditOrderLine code))}
    [:td codestr]
-   [:td (s/trim (str origin " " description))]
+   [:td
+    [:div [:b  description]]
+    [:div.tablecell-line2 [:i origin]]]
    [:td packsize]
    [:td.rightjust (u/tonumber price)]
+   [:td (u/vat-notice vat)]
    [:td unit]
    [:td.rightjust quantity]
    [:td.rightjust (u/tonumber estcost)]
@@ -33,6 +36,7 @@
       [:th "Item"]
       [:th "Pack size"]
       [:th "Pack Price"]
+      [:th "Vat"]
       [:th "Albany Unit"]
       [:th "Quantity"]
       [:th "Est cost"]
@@ -80,13 +84,12 @@
          {:keys [codestr description origin packsize price vat
                  unit unitsperpack splits?]} :itemdata} (:order-item app)
         submit-enabled (and (> price 0) (> quantity 0))]
-    (prn "order-entry-form codestr" codestr "quantity" quantity "itemdata" itemdata)
    [:div.order-container
     [:div.clearfix
      [:span
       [order-input-field ui-channel "code" "code?" codestr m/->ChangeCode]
       [order-readonly-field "packsize" "Pack size" packsize]
-      [order-readonly-field "packprice" "Pack price" (str (u/toprice price) (u/addvat vat))]
+      [order-readonly-field "packprice" "Pack price" (str (u/toprice price) (u/vat-notice vat "+"))]
       [order-readonly-field "unit" "Albany unit" unit]
       [order-readonly-field "unisperpack" "Units/pack" unitsperpack]
       [order-readonly-field "unitprice" "Price/unit" (u/toprice (/ price unitsperpack))]
@@ -97,8 +100,9 @@
     [:div.clearfix
      [:span
       [:div.orderinput
-       [:span.origin.orderinput origin]
-       [:span.description.orderinput description]]]]]))
+       [:b description]]
+      [:div.orderinput
+       [:i origin]]]]]))
 
 (defn root
   [ui-channel app]

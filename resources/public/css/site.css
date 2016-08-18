@@ -163,3 +163,11 @@ span.orderinput {
 .clear-left {
     clear: left;
 }
+
+.rightjust {
+    text-align: right;
+}
+
+.tablecell-line2 {
+    margin-top: 2px;
+}

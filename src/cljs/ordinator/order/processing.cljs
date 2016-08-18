@@ -9,7 +9,7 @@
 
   m/GetOrder
   (process-message [_ app]
-    (prn "GetOrder [Message] app" app) app)
+    app)
 
   m/OrderResult
   (process-message [{:keys [status body] :as response} app]
@@ -43,9 +43,8 @@
   m/ChangeQuantity
   (process-message [{:keys [quantity]} app]
     (let [quantity (u/tofloat quantity)
-          {{:keys [unitsperpack price]} :itemdata} (:order-item app)
-          estcost (u/cost-to-user quantity unitsperpack price)]
-      (prn "ChangeQuantity upp price quantity estcost" unitsperpack price quantity estcost)
+          {{:keys [unitsperpack price vat]} :itemdata} (:order-item app)
+          estcost (u/cost-to-user quantity unitsperpack price vat)]
       (update-in app [:order-item :order] assoc :estcost estcost :quantity quantity)))
 
   m/AddItem
@@ -71,7 +70,6 @@
 
   m/GetOrder
   (watch-channels [{:keys [username]} app]
-    (prn "GetOrder [EventSource] username" username)
     #{(rest/retrieve-order username "current")})
 
   m/GetCatalogue
