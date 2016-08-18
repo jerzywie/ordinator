@@ -43,6 +43,12 @@
       ]
      [login-view/user-status-widget (forward m/->Login ui-channel) (:login app)]]]])
 
+(defn app-view-for-debug
+  [app]
+  (let [cat-count (count (get-in app [:order :catalogue]))]
+    (-> (update-in app [:order] dissoc :catalogue)
+        (update-in [:order] assoc :catalogue-count cat-count))))
+
 (defn root [ui-channel app]
   [:div
    [header ui-channel app]
@@ -54,4 +60,4 @@
       :login-page [login-page ui-channel app]
       [home-page ui-channel app])]
    [:h4.clear-left "debug app state"]
-   [:pre.font-size-xsmall (with-out-str (pprint app))]])
+   [:pre.font-size-xsmall (with-out-str (pprint (app-view-for-debug app)))]])
