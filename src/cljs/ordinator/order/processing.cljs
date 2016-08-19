@@ -19,7 +19,9 @@
 
   m/DeleteOrderLine
   (process-message [{code :code} app]
-    (update-in app [:items] dissoc code))
+    (-> app
+        (update-in [:items] dissoc code)
+        (assoc :isdirty true)))
 
   m/EditOrderLine
   (process-message [{code :code} app]

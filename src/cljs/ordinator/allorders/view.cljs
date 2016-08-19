@@ -19,34 +19,39 @@
   (if (u/valid-quantity? quantity unitsperpack splits?) "bg-success" "bg-danger"))
 
 (defn action-button
-  [ui-channel code value disabled? message]
-  [:input.submit {:type "submit"
-                  :id (make-key code value)
-                  :value value
-                  :disabled disabled?
-                  :on-click (send! ui-channel (message code))}])
+  [ui-channel code value disabled? class message]
+  (let [class (str "submit " class)]
+    [:input {:type "submit"
+             :id (make-key code value)
+             :value value
+             :disabled disabled?
+             :class class
+             :on-click (send! ui-channel (message code))}]))
 
 (defn destroy-button
   [ui-channel {:keys [deleteconfirm editing] :as app} code]
   (let [disabled? (u/disable-it editing deleteconfirm code)]
     (if (= deleteconfirm code)
       [:td
-       [action-button ui-channel code "Confirm" disabled? m/->ReallyDeleteItem]
-       [action-button ui-channel code "Cancel" disabled? m/->CancelDeleteItem]]
+       [action-button ui-channel code "Confirm" disabled? nil m/->ReallyDeleteItem]
+       [action-button ui-channel code "Cancel" disabled? nil m/->CancelDeleteItem]]
       [:td
        [:button.destroy {:disabled disabled?
                          :on-click (send! ui-channel (m/->ConfirmDeleteItem code))}]])))
 
 (defn non-edit-buttons
   [ui-channel {:keys [deleteconfirm editing]} code]
-  [:td
-   [action-button ui-channel code "Edit" (u/disable-it deleteconfirm editing code) m/->EditItem]])
+  (let [disabled? (u/disable-it deleteconfirm editing code)]
+    [:td
+     [action-button ui-channel code "Edit" disabled? nil m/->EditItem]]))
 
 (defn edit-buttons
-  [ui-channel {:keys [deleteconfirm editing]} code]
-  [:td
-   [action-button ui-channel code "Save" (u/disable-it deleteconfirm editing code) m/->SaveItem]
-   [action-button ui-channel code "Revert" (u/disable-it deleteconfirm editing code) m/->RevertEditing]])
+  [ui-channel {:keys [deleteconfirm editing isdirty]} code]
+  (let [disabled? (u/disable-it deleteconfirm editing code)
+        class (if isdirty "btn-warning" nil)]
+    [:td
+     [action-button ui-channel code "Save" disabled? class m/->SaveItem]
+     [action-button ui-channel code "Revert" disabled? nil m/->RevertEditing]]))
 
 (defn render-order-details
   [ui-channel app code member iseditable? focus {:keys [quantity estcost]}]

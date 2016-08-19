@@ -11,7 +11,7 @@
   (let [pre-edit-orders (:preeditorders app)
         code (:editing app)]
     (-> app
-        (assoc :editing nil :preeditorders nil)
+        (assoc :editing nil :preeditorders nil :isdirty nil)
         (assoc-in [:items code :orders] pre-edit-orders))))
 
 (extend-protocol Message
@@ -47,7 +47,9 @@
           {:keys [unitsperpack price vat]} (get-in app [:items code :itemdata])
           estcost (u/cost-to-user quantity unitsperpack price vat)
           qty-cost {:quantity quantity :estcost estcost}]
-      (assoc-in app [:items code :orders member] qty-cost)))
+      (-> app
+          (assoc-in [:items code :orders member] qty-cost)
+          (assoc :isdirty true))))
 
   m/KeyEvent
   (process-message [{:keys [c]} app]
@@ -65,7 +67,7 @@
 
   m/SaveItemResult
   (process-message [{:keys [status body] :as response} app]
-    (assoc app :editing nil :preeditorders nil))
+    (assoc app :editing nil :preeditorders nil :isdirty nil))
 
   m/ConfirmDeleteItem
   (process-message [{:keys [code]} app]

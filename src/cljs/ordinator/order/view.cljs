@@ -45,12 +45,14 @@
           (map (partial render-order-line ui-channel) items))]])
 
 (defn submit-save-order
-  [ui-channel]
-  [:div.orderinput.ordersubmit
-   [:input.submit {:type "submit"
-                   :id "saveorder"
-                   :value "Save"
-                   :on-click (send! ui-channel (m/->SaveOrder))}]])
+  [ui-channel {:keys [isdirty]}]
+  (let [class (str "submit" (when isdirty " btn-warning"))]
+    [:div.orderinput.ordersubmit
+     [:input.submit {:type "submit"
+                     :id "saveorder"
+                     :value "Save"
+                     :class class
+                     :on-click (send! ui-channel (m/->SaveOrder))}]]))
 
 
 (defn order-input-field
@@ -114,5 +116,5 @@
         [order-entry-form ui-channel app]]]
       [:div
        [:h3 "Items"]
-       [submit-save-order ui-channel]
+       [submit-save-order ui-channel app]
        [render-order ui-channel (:items app)]]]]))
