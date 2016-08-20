@@ -6,7 +6,7 @@
              [order :as order]
              [collation :as col]]
             [compojure
-             [core :refer [defroutes GET PUT POST DELETE]]
+             [core :refer [defroutes context GET PUT POST DELETE]]
              [route :as route]]
             [environ.core :refer [env]]
             [metrics.ring
@@ -85,6 +85,30 @@
   (col/delete-order-line orderdate code)
   {:status 200})
 
+(defroutes user-routes
+  (GET "/:user/orders/:orderdate"
+       [user orderdate]
+       (get-user-order user orderdate))
+
+  (PUT "/:user/orders/:orderdate" req
+       (save-user-order req)))
+
+(defroutes collation-routes
+    (GET "/:orderdate"
+       [orderdate]
+       (get-all-orders orderdate))
+
+  (PUT "/:orderdate/:code" req
+       (update-all-orders-code req))
+
+  (DELETE "/:orderdate/:code"
+          [orderdate code]
+          (delete-all-orders-code orderdate code)))
+
+(defroutes admin-routes
+    (PUT "/catalogue"
+       [] (update-catalogue)))
+
 (defroutes routes
 
   (GET "/healthcheck"
@@ -105,29 +129,20 @@
   (DELETE "/login"
           request (json-auth/handle-session request))
 
-  (GET "/users/:user/orders/:orderdate"
-       [user orderdate]
-       (get-user-order user orderdate))
+  (context
+   "/users" req
+   (friend/wrap-authorize user-routes #{:ordinator.auth/user}))
 
-  (PUT "/users/:user/orders/:orderdate" req
-       (save-user-order req))
+  (context
+   "/orders" req
+   (friend/wrap-authorize collation-routes #{:ordinator.auth/coordinator}))
 
-  (GET "/orders/:orderdate"
-       [orderdate]
-       (get-all-orders orderdate))
-
-  (PUT "/orders/:orderdate/:code" req
-       (update-all-orders-code req))
-
-  (DELETE "/orders/:orderdate/:code"
-          [orderdate code]
-          (delete-all-orders-code orderdate code))
+  (context
+   "/" req
+   (friend/wrap-authorize admin-routes #{:ordinator.auth/admin}))
 
   (GET "/catalogue"
        [] (get-catalogue))
-
-  (PUT "/catalogue"
-       [] (update-catalogue))
 
   (route/resources "/")
 
@@ -143,8 +158,6 @@
 (def app
   (-> routes
       (mywrapper)
-      (wrap-json-authenticate)
-      (wrap-session)
       (cond-> dev-mode? wrap-exceptions)
       (wrap-reload)
       (instrument)
@@ -155,3 +168,8 @@
       (wrap-nested-params)
       (wrap-params)
       (expose-metrics-as-json)))
+
+(def secure-app
+  (-> app
+      (wrap-json-authenticate)
+      (wrap-session)))

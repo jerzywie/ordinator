@@ -25,13 +25,13 @@
 
 (defn start-server
   []
-  (run-jetty #'web/app {:port setup/service-port
-                        :max-threads setup/threads
-                        :join? false
-                        :stacktraces? (not setup/production?)
-                        :auto-reload? (not setup/production?)
-                        :configurator configure-server
-                        :send-server-version false}))
+  (run-jetty #'web/secure-app {:port setup/service-port
+                               :max-threads setup/threads
+                               :join? false
+                               :stacktraces? (not setup/production?)
+                               :auto-reload? (not setup/production?)
+                               :configurator configure-server
+                               :send-server-version false}))
 
 (defn- configure-graphite-appender
   []

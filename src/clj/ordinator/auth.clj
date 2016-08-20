@@ -17,17 +17,21 @@
             "jerzy" {:id 1
                      :username "jerzy"
                      :password (creds/hash-bcrypt "albany")
-                     :roles #{::user}}
+                     :roles #{::user ::admin}}
             "sally" {:id 2
                      :username "sally"
                      :password (creds/hash-bcrypt "albany")
-                     :roles #{::user}}
+                     :roles #{::user ::coordinator}}
             "matthew" {:id 3
                      :username "matthew"
                      :password (creds/hash-bcrypt "albany")
                      :roles #{::user}}})
 
 (derive ::admin ::user)
+
+(derive ::admin ::coordinator)
+
+(derive ::coordinator ::user)
 
 (defn user-list
   []
