@@ -26,7 +26,7 @@
             :class "form-control"
             :type type
             :required ""
-            :defaultValue value
+            :value value
             :on-change (send-value! ui-channel change-fn)}]])
 
 (defn username-input
@@ -60,7 +60,7 @@
 
 (defn root
   [ui-channel {:keys [username password] :as app}]
-  (let [submit-enabled (not (or (nil? username) (nil? password)))]
+  (let [submit-enabled (not (or (nil? (seq username)) (nil? (seq password))))]
     [:div
      [:div
       [:h2 "Please sign-in"]

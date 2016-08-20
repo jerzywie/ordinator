@@ -8,11 +8,11 @@
 
   m/ChangeUsername
   (process-message [{:keys [username]} app]
-    (assoc app :username username))
+    (assoc app :username username :message nil))
 
   m/ChangePassword
   (process-message [{:keys [password]} app]
-    (assoc app :password password))
+    (assoc app :password password :message nil))
 
   m/DoLogin
   (process-message [_ app]
@@ -24,7 +24,7 @@
       201 (do
             (utils/navigate! "/")
             (assoc app :user body :message nil :loggedin true :username nil :password nil))
-      (assoc app :username nil :password nil :user nil :message (:reason body) :loggedin false)))
+      (assoc app :password nil :user nil :message (:reason body) :loggedin false)))
 
   m/DoLogout
   (process-message [_ app]
