@@ -7,6 +7,7 @@
             [hiccup.core :refer :all]
             [hiccup.page :as h]
             [hiccup.element :as e]
+            [radix.error :refer [error-response]]
             [ring.util.response :refer [status response]]))
 
 ; a dummy in-memory user "database"
@@ -52,7 +53,6 @@
          [:div "Password" [:input {:type "password" :name "password"}]]
          [:div [:input {:type "submit" :class "button" :value "Login"}]]]]]]]))
 
-
 (defn wrap-form-authenticate
   [handler]
   (friend/authenticate handler
@@ -66,12 +66,21 @@
                                                    (status 401))
                         :workflows [(workflows/interactive-form)]}))
 
+(defn unauthenticated-handler [thing]
+  "handler when authentication fails"
+  (error-response "You need to be logged in to use this resource" 401))
+
+(defn unauthorized-handler [thing]
+  "handler when authorization fails"
+  (error-response "Access to this resource isn't allowed" 403))
+
 (defn wrap-json-authenticate
   [handler]
   (friend/authenticate handler
                        {:login-uri "/login"
                         :default-landing-uri "/login"
-                        :unauthorized-handler json-auth/unauthorized-handler
+                        :unauthorized-handler unauthorized-handler
+                        :unauthenticated-handler unauthenticated-handler
                         :redirect-on-auth? false
                         :workflows [(json-auth/json-login
                                      :login-uri "/login"

@@ -158,10 +158,8 @@
 (def app
   (-> routes
       (mywrapper)
-      (cond-> dev-mode? wrap-exceptions)
       (wrap-reload)
       (instrument)
-      (wrap-error-handling)
       (wrap-ignore-trailing-slash)
       (wrap-json-response)
       (wrap-json-kw-params)
@@ -172,4 +170,6 @@
 (def secure-app
   (-> app
       (wrap-json-authenticate)
-      (wrap-session)))
+      (wrap-session)
+      (wrap-error-handling)
+      (wrap-json-response)))
