@@ -1,7 +1,7 @@
 (ns ordinator.web
   (:require [ordinator
              [catalogue :as cat]
-             [auth :refer [wrap-json-authenticate login-form]]
+             [auth :refer [wrap-json-authenticate wrap-same-user]]
              [page-frame :refer [page-frame]]
              [order :as order]
              [collation :as col]]
@@ -86,11 +86,12 @@
   {:status 200})
 
 (defroutes user-routes
-  (GET "/:user/orders/:orderdate"
+  (GET "/orders/:orderdate"
        [user orderdate]
        (get-user-order user orderdate))
 
-  (PUT "/:user/orders/:orderdate" req
+  (PUT "/orders/:orderdate"
+       [user :as req]
        (save-user-order req)))
 
 (defroutes collation-routes
@@ -130,8 +131,11 @@
           request (json-auth/handle-session request))
 
   (context
-   "/users" req
-   (friend/wrap-authorize user-routes #{:ordinator.auth/user}))
+   "/users/:user" [user :as  req]
+   (let [req (assoc req :user user)]
+     (-> user-routes
+         (friend/wrap-authorize #{:ordinator.auth/user})
+         (wrap-same-user user))))
 
   (context
    "/orders" req

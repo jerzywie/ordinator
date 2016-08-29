@@ -34,11 +34,11 @@
   []
   (into [] (rest (keys users))))
 
-(defn unauthenticated-handler [thing]
+(defn unauthenticated-handler [_]
   "handler when authentication fails"
   (error-response "You need to be logged in to use this resource" 401))
 
-(defn unauthorized-handler [thing]
+(defn unauthorized-handler [_]
   "handler when authorization fails"
   (error-response "Access to this resource isn't allowed" 403))
 
@@ -54,3 +54,11 @@
                                      :login-uri "/login"
                                      :login-failure-handler json-auth/login-failed
                                      :credential-fn (partial creds/bcrypt-credential-fn users))]}))
+
+(defn wrap-same-user
+  [handler user]
+  (fn [req]
+    (let [auth-user (:identity (friend/current-authentication req))]
+      (if (= user auth-user)
+        (handler req)
+        (error-response "You may not access a different user's resources" 400)))))
