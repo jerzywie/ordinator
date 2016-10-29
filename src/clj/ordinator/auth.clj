@@ -45,13 +45,13 @@
 (defn wrap-json-authenticate
   [handler]
   (friend/authenticate handler
-                       {:login-uri "/login"
-                        :default-landing-uri "/login"
+                       {:login-uri "/v1/login"
+                        :default-landing-uri "/v1/login"
                         :unauthorized-handler unauthorized-handler
                         :unauthenticated-handler unauthenticated-handler
                         :redirect-on-auth? false
                         :workflows [(json-auth/json-login
-                                     :login-uri "/login"
+                                     :login-uri "/v1/login"
                                      :login-failure-handler json-auth/login-failed
                                      :credential-fn (partial creds/bcrypt-credential-fn users))]}))
 

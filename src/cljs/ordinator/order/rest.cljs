@@ -7,7 +7,7 @@
   "Get order and save in local cache"
   [username orderdate]
   (let [orderdate "current"
-        resource (str "/users/" username "/orders/" orderdate)
+        resource (str "/v1/users/" username "/orders/" orderdate)
         response (http/get resource)]
     (petrol/wrap m/map->OrderResult response)))
 
@@ -15,14 +15,14 @@
   []
    "Get catalogue data."
    (prn "getting catalogue")
-   (let [response (http/get "/catalogue")]
+   (let [response (http/get "/v1/catalogue")]
      (petrol/wrap m/map->GetCatalogueResult response)))
 
 (defn save-order
   [username orderdate order-items]
   "Save order data."
   (prn "rest/save order")
-  (let [resource (str "/users/" username "/orders/" orderdate)
+  (let [resource (str "/v1/users/" username "/orders/" orderdate)
         response (http/put resource
                            {:json-params {:user (keyword username) :orderdate (keyword orderdate)
                                           :items order-items}})]

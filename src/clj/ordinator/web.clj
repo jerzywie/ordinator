@@ -121,32 +121,34 @@
   (GET "/"
        [] (page-frame dev-mode?))
 
-  (GET "/login"
-       request (json-auth/handle-session request))
-
-  (POST "/login"
-       request (json-auth/handle-session request))
-
-  (DELETE "/login"
-          request (json-auth/handle-session request))
-
   (context
-   "/users/:user" [user :as  req]
-   (let [req (assoc req :user user)]
-     (-> user-routes
-         (friend/wrap-authorize #{:ordinator.auth/user})
-         (wrap-same-user user))))
+   "/v1" request
+   (GET "/login"
+        request (json-auth/handle-session request))
 
-  (context
-   "/orders" req
-   (friend/wrap-authorize collation-routes #{:ordinator.auth/coordinator}))
+   (POST "/login"
+         request (json-auth/handle-session request))
 
-  (context
-   "/" req
-   (friend/wrap-authorize admin-routes #{:ordinator.auth/admin}))
+   (DELETE "/login"
+           request (json-auth/handle-session request))
 
-  (GET "/catalogue"
-       [] (get-catalogue))
+   (context
+    "/users/:user" [user :as  req]
+    (let [req (assoc req :user user)]
+      (-> user-routes
+          (friend/wrap-authorize #{:ordinator.auth/user})
+          (wrap-same-user user))))
+
+   (context
+    "/orders" req
+    (friend/wrap-authorize collation-routes #{:ordinator.auth/coordinator}))
+
+   (context
+    "/" req
+    (friend/wrap-authorize admin-routes #{:ordinator.auth/admin}))
+
+   (GET "/catalogue"
+        [] (get-catalogue)))
 
   (route/resources "/")
 
