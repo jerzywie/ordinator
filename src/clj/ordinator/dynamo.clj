@@ -8,6 +8,7 @@
    :secret-key "dummy-ordinator-aws-secret"
 
    :endpoint "http://localhost:8000"
+   :region "a-region"
    ;:endpoint "http://dynamodb.eu-west-1.amazonaws.com"
   })
 
@@ -17,6 +18,10 @@
                     [:user :s]
                     {:range-keydef [:orderdate :s]
                      :throughput {:read 1 :write 1}
+                     :block? true})
+  (far/ensure-table client-opts :users
+                    [:user :s]
+                    {:throughput {:read 1 :write 1}
                      :block? true}))
 
 (defn get-user-order
@@ -27,6 +32,7 @@
 
 (defn save-user-order
   [user orderdate items]
+  (prn "save-user-order user" user "orderdate" orderdate "items" items )
   (far/put-item client-opts
                 :orders
                 {:user user

@@ -1,6 +1,6 @@
 (ns cljs.ordinator.order.messages)
 
-(defrecord GetOrder [username])
+(defrecord GetOrder [userid])
 
 (defrecord OrderResult [body])
 

@@ -24,12 +24,15 @@
 
 (defn collate-orders
   [orderdate]
-  (->> (user-list)
-       (map #(db/get-user-order % orderdate))
-       (map get-orders)
-       flatten
-       (apply merge-with (partial collate))
-       (assoc {:orderdate orderdate} :items)))
+  (let [users (user-list)
+        id-list (keys users)]
+    (prn "users" (user-list) "id-list" id-list)
+    (->> id-list
+         (map #(db/get-user-order % orderdate))
+         (map get-orders)
+         flatten
+         (apply merge-with (partial collate))
+         (assoc {:orderdate orderdate :userlist users} :items))))
 
 (defn merge-new-order
   [code itemdata new-order old-order]

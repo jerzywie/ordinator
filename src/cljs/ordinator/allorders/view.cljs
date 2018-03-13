@@ -65,10 +65,10 @@
                                   :givefocus? focus}]))
 
 (defn render-collation-line
-  [ui-channel app [code {:keys [itemdata orders]}]]
+  [ui-channel app userids [code {:keys [itemdata orders]}]]
   (let [codestr (u/key->code code)
         {:keys [description origin packsize price unit vat unitsperpack splits?]} itemdata
-        members [:jerzy :sally :matthew]
+        members userids
         editable? (= (:editing app) code)
         total (total-quantity orders)
         total-class (total-class total unitsperpack splits?)]
@@ -91,24 +91,24 @@
      [destroy-button ui-channel app code]]))
 
 (defn render-collated-order
-  [ui-channel {:keys [items] :as app}]
-  [:div
-   [:table.collatedorder.order
-    [:thead
-     [:tr
-      [:th "Code"]
-      [:th "Item"]
-      [:th "Pack size"]
-      [:th "Pack Price"]
-      [:th "VAT"]
-      [:th "Albany Unit"]
-      [:th "Jerzy"]
-      [:th "Sally"]
-      [:th "Matthew"]
-      [:th "Total qty"]
-      [:th {:colSpan 2} ""]]]
-    (into [:tbody]
-          (map (partial render-collation-line ui-channel app) items))]])
+  [ui-channel {:keys [items userlist] :as app}]
+  (let [usernames (vals userlist)
+        userids (keys userlist)]
+    [:div
+     [:table.collatedorder.order
+      [:thead
+       [:tr
+        [:th "Code"]
+        [:th "Item"]
+        [:th "Pack size"]
+        [:th "Pack Price"]
+        [:th "VAT"]
+        [:th "Albany Unit"]
+        (map (fn [name] [:th {:key name} name]) usernames)
+        [:th "Total qty"]
+        [:th {:colSpan 2} ""]]]
+      (into [:tbody]
+            (map (partial render-collation-line ui-channel app userids) items))]]))
 
 (defn root
   [ui-channel app]

@@ -26,11 +26,11 @@
  :unit :update-cat
 
  (fact "update-catalogue returns correct data structure"
-       (update-catalogue) => {:acode {:code "acode"
+       (update-catalogue) => {:acode {:codestr "acode"
                                       :packsize "3*blah"
                                       :unitsperpack 3
                                       :unit "1*blah"
                                       :splits? true}}
        (provided
-        (read-cat-file) => [{:header "header"} {:code "acode" :packsize "3*blah"}]
+        (read-cat-file) => [{:header "header"} {:codestr "acode" :packsize "3*blah"}]
         (get-units "3*blah") => {:unitsperpack 3 :unit "1*blah" :splits? true})))

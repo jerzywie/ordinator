@@ -23,8 +23,8 @@
   m/GetAllOrdersResult
   (process-message [{:keys [status body] :as response} app]
     (when (= status 200)
-      (let [{:keys [orderdate items]} body]
-        (assoc app :orderdate orderdate :items items))))
+      (let [{:keys [orderdate items userlist]} body]
+        (assoc app :orderdate orderdate :items items :userlist userlist))))
 
   m/EditItem
   (process-message [{:keys [code]} app]

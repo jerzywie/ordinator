@@ -4,7 +4,8 @@
              [auth :refer [wrap-json-authenticate wrap-same-user]]
              [page-frame :refer [page-frame]]
              [order :as order]
-             [collation :as col]]
+             [collation :as col]
+             [user :as user]]
             [compojure
              [core :refer [defroutes context GET PUT POST DELETE]]
              [route :as route]]
@@ -85,6 +86,12 @@
   (col/delete-order-line orderdate code)
   {:status 200})
 
+(defn create-user
+  [{:keys [route-params body-params]}]
+  (let [user (user/create-user (merge route-params body-params))]
+    {:status 201
+     :body user}))
+
 (defroutes user-routes
   (GET "/orders/:orderdate"
        [user orderdate]
@@ -92,6 +99,7 @@
 
   (PUT "/orders/:orderdate"
        [user :as req]
+       (prn "PUT users/orders req" req)
        (save-user-order req)))
 
 (defroutes collation-routes
@@ -108,7 +116,10 @@
 
 (defroutes admin-routes
     (PUT "/catalogue"
-       [] (update-catalogue)))
+         [] (update-catalogue))
+
+    (POST "/usermaint" req
+          (create-user req)))
 
 (defroutes routes
 
@@ -143,12 +154,16 @@
     "/orders" req
     (friend/wrap-authorize collation-routes #{:ordinator.auth/coordinator}))
 
-   (context
-    "/" req
-    (friend/wrap-authorize admin-routes #{:ordinator.auth/admin}))
-
    (GET "/catalogue"
-        [] (get-catalogue)))
+        [] (get-catalogue))
+
+   (friend/wrap-authorize
+    (POST "/users" req
+          (create-user req)) #{:ordinator.auth/admin})
+
+   (friend/wrap-authorize
+    (PUT "/catalogue"
+         [] (update-catalogue)) #{:ordinator.auth/admin}))
 
   (route/resources "/")
 

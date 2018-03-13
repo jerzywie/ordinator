@@ -7,22 +7,22 @@
             [radix.error :refer [error-response]]))
 
 ; a dummy in-memory user "database"
-(def users {"root" {:id 0
+(def users {"root" {:userid "0-0"
                     :username "root"
                     :password (creds/hash-bcrypt "admin")
                     :roles #{::admin}}
-            "jerzy" {:id 1
+            "jerzy" {:userid "1a"
                      :username "jerzy"
                      :password (creds/hash-bcrypt "albany")
                      :roles #{::user ::admin}}
-            "sally" {:id 2
+            "sally" {:userid "2b"
                      :username "sally"
                      :password (creds/hash-bcrypt "albany")
                      :roles #{::user ::coordinator}}
-            "matthew" {:id 3
-                     :username "matthew"
-                     :password (creds/hash-bcrypt "albany")
-                     :roles #{::user}}})
+            "matthew" {:userid "3c"
+                       :username "matthew"
+                       :password (creds/hash-bcrypt "albany")
+                       :roles #{::user}}})
 
 (derive ::admin ::user)
 
@@ -32,7 +32,10 @@
 
 (defn user-list
   []
-  (into [] (rest (keys users))))
+  (let [ord-users (rest users)
+        names (keys ord-users)
+        ids (map :userid (vals ord-users))]
+    (zipmap ids names)))
 
 (defn unauthenticated-handler [_]
   "handler when authentication fails"
@@ -58,7 +61,7 @@
 (defn wrap-same-user
   [handler user]
   (fn [req]
-    (let [auth-user (:identity (friend/current-authentication req))]
+    (let [auth-user (:userid (friend/current-authentication req))]
       (if (= user auth-user)
         (handler req)
         (error-response "You may not access a different user's resources" 400)))))

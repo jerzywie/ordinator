@@ -16,6 +16,7 @@ dc-sdk.log
 figwheel_server.log
 resources/Essential_Stock_File*
 resources/public/js/out/*
+dev-resources/
 data-representations.json
 appstate.json
 resources/public/css/site-unused.css

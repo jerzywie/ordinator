@@ -71,8 +71,9 @@
 (extend-protocol EventSource
 
   m/GetOrder
-  (watch-channels [{:keys [username]} app]
-    #{(rest/retrieve-order username "current")})
+  (watch-channels [{:keys [userid] :as blah} app]
+    (prn "getOrder" blah)
+    #{(rest/retrieve-order userid "current")})
 
   m/GetCatalogue
   (watch-channels [_ app]
@@ -81,7 +82,7 @@
 
   m/SaveOrder
   (watch-channels [_ app]
-    (let [username (:user app)
+    (let [userid (:user app)
           orderdate "current"
           order-items (:items app)]
-      #{(rest/save-order username orderdate order-items)})))
+      #{(rest/save-order userid orderdate order-items)})))

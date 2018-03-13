@@ -53,8 +53,10 @@
   (watch-channels [_ app]
     (let [logged-in? (get-in app [:login :loggedin])]
       (when logged-in?
+        (prn "NavigateToOrder app" (update-in app [:order] dissoc :catalogue))
+        (prn "NTO userid " (get-in app [:login :user :userid]))
         #{(to-chan [(m/->Order (order-m/->GetCatalogue))
-                    (m/->Order (order-m/->GetOrder (get-in app [:login :user :username])))])})))
+                    (m/->Order (order-m/->GetOrder (get-in app [:login :user :userid])))])})))
 
   m/NavigateToAllOrders
   (watch-channels [_ app]
