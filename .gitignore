@@ -23,3 +23,4 @@ resources/public/css/site-unused.css
 *.min.css
 .#*
 checkouts/
+.DS_Store
