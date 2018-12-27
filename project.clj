@@ -2,12 +2,13 @@
   :description "Ordinator service"
 
   :dependencies [[org.clojure/core.cache "0.6.4"]
+                 [org.clojure/tools.reader "1.0.0"]
                  [ch.qos.logback/logback-classic "1.1.3"]
-                 [cheshire "5.4.0"]
-                 [clj-http "1.1.2"]
-                 [clj-time "0.9.0"]
-                 [compojure "1.3.4"]
-                 [environ "1.0.0"]
+                 [cheshire "5.8.1"]
+                 [clj-http "3.9.1"]
+                 [clj-time "0.15.1"]
+                 [compojure "1.5.2"]
+                 [environ "1.1.0"]
                  [com.codahale.metrics/metrics-logback "3.0.2"]
                  [mixradio/graphite-filter "1.0.0"]
                  [mixradio/instrumented-ring-jetty-adapter "1.0.4"]
