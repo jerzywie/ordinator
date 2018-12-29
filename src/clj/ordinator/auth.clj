@@ -1,5 +1,6 @@
 (ns ordinator.auth
-  (:require [cemerick.friend :as friend]
+  (:require [ordinator.role :as role]
+            [cemerick.friend :as friend]
             [cemerick.friend
              [workflows :as workflows]
              [credentials :as creds]]
@@ -10,25 +11,19 @@
 (def users {"root" {:userid "0-0"
                     :username "root"
                     :password (creds/hash-bcrypt "admin")
-                    :roles #{::admin}}
+                    :roles #{::role/admin}}
             "jerzy" {:userid "1a"
                      :username "jerzy"
                      :password (creds/hash-bcrypt "albany")
-                     :roles #{::user ::admin}}
+                     :roles #{::role/user ::role/admin}}
             "sally" {:userid "2b"
                      :username "sally"
                      :password (creds/hash-bcrypt "albany")
-                     :roles #{::user ::coordinator}}
+                     :roles #{::role/user ::role/coordinator}}
             "matthew" {:userid "3c"
                        :username "matthew"
                        :password (creds/hash-bcrypt "albany")
-                       :roles #{::user}}})
-
-(derive ::admin ::user)
-
-(derive ::admin ::coordinator)
-
-(derive ::coordinator ::user)
+                       :roles #{::role/user}}})
 
 (defn user-list
   []
