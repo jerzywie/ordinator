@@ -23,7 +23,7 @@
 (defn save-order
   [userid orderdate order-items]
   "Save order data."
-  (prn "rest/save order")
+  (prn "rest/save order userid " userid)
   (let [resource (str "/v1/users/" userid "/orders/" orderdate)
         response (http/put resource
                            {:json-params {:user (keyword userid) :orderdate (keyword orderdate)

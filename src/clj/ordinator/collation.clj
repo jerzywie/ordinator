@@ -14,13 +14,13 @@
      :orders (merge orders new-orders)}))
 
 (defn itemdata-and-orders
-  [user [code {:keys [itemdata order]}]]
+  [userid [code {:keys [itemdata order]}]]
   {code {:itemdata itemdata
-         :orders {(keyword user) order}}})
+         :orders {(keyword userid) order}}})
 
 (defn get-orders
-  [{:keys [user items]}]
-  (map #(itemdata-and-orders user %) items))
+  [{:keys [userid items]}]
+  (map #(itemdata-and-orders userid %) items))
 
 (defn collate-orders
   [orderdate]

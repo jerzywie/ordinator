@@ -58,9 +58,10 @@
    :body (cat/update-catalogue)})
 
 (defn get-user-order
-  [user orderdate]
-  (let [order (order/get-user-order user orderdate)]
-    (prn "get-user-order order" order)
+  [userid orderdate]
+  (prn "get-user-order.1 userid " userid " orderdate " orderdate)
+  (let [order (order/get-user-order userid orderdate)]
+    (prn "get-user-order.2 order " order)
     {:status 200
      :body order}))
 

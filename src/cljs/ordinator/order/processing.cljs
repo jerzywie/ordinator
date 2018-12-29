@@ -14,8 +14,8 @@
   m/OrderResult
   (process-message [{:keys [status body] :as response} app]
     (when (= status 200)
-      (let [{:keys [orderdate user items]} body]
-        (assoc app :orderdate orderdate :user user :items items))))
+      (let [{:keys [orderdate userid items]} body]
+        (assoc app :orderdate orderdate :userid userid :items items))))
 
   m/DeleteOrderLine
   (process-message [{code :code} app]
@@ -82,7 +82,7 @@
 
   m/SaveOrder
   (watch-channels [_ app]
-    (let [userid (:user app)
+    (let [userid (:userid app)
           orderdate "current"
           order-items (:items app)]
       #{(rest/save-order userid orderdate order-items)})))

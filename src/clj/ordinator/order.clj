@@ -24,11 +24,11 @@
   (into {} (map augment-order-item items)))
 
 (defn get-user-order
-  [user orderdate]
-  (->> (db/get-user-order user orderdate)
+  [userid orderdate]
+  (->> (db/get-user-order userid orderdate)
        (ensure-map)
        (add-other-fields)
-       (assoc {} :user user :orderdate orderdate :items)))
+       (assoc {} :userid userid :orderdate orderdate :items)))
 
 (defn save-user-order
   [{:keys [user orderdate items]}]

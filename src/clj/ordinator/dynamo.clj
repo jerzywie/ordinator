@@ -15,26 +15,27 @@
 (defn ensure-tables
   []
   (far/ensure-table client-opts :orders
-                    [:user :s]
+                    [:userid :s]
                     {:range-keydef [:orderdate :s]
                      :throughput {:read 1 :write 1}
                      :block? true})
   (far/ensure-table client-opts :users
-                    [:user :s]
-                    {:throughput {:read 1 :write 1}
+                    [:userid :s]
+                    {:range-keydef [:username :s]
+                     :throughput {:read 1 :write 1}
                      :block? true}))
 
 (defn get-user-order
-  [user orderdate]
+  [userid orderdate]
   (far/get-item client-opts
                 :orders
-                {:user user :orderdate orderdate}))
+                {:userid userid :orderdate orderdate}))
 
 (defn save-user-order
-  [user orderdate items]
-  (prn "save-user-order user" user "orderdate" orderdate "items" items )
+  [userid orderdate items]
+  (prn "save-user-order userid" userid "orderdate" orderdate "items" items )
   (far/put-item client-opts
                 :orders
-                {:user user
+                {:userid userid
                  :orderdate orderdate
                  :items items}))

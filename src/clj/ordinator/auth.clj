@@ -59,9 +59,9 @@
                                      :credential-fn (partial creds/bcrypt-credential-fn users))]}))
 
 (defn wrap-same-user
-  [handler user]
+  [handler userid]
   (fn [req]
-    (let [auth-user (:userid (friend/current-authentication req))]
-      (if (= user auth-user)
+    (let [auth-userid (:userid (friend/current-authentication req))]
+      (if (= userid auth-userid)
         (handler req)
         (error-response "You may not access a different user's resources" 400)))))
