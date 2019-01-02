@@ -21,7 +21,10 @@
                      :block? true})
   (far/ensure-table client-opts :users
                     [:userid :s]
-                    {:range-keydef [:username :s]
+                    {:gsindexes [{:name "username-index"
+                                  :hash-keydef [:username :s]
+                                  :projection :keys-only
+                                  :throughput {:read 1 :write 1}}]
                      :throughput {:read 1 :write 1}
                      :block? true}))
 
@@ -39,3 +42,34 @@
                 {:userid userid
                  :orderdate orderdate
                  :items items}))
+
+(defn keywordize-roles
+  [roles]
+  (->> roles (map keyword) set))
+
+(defn get-user-by-userid
+  "Retrieves a user record by userid."
+  [userid]
+  (let [result (far/get-item client-opts
+                             :users
+                             {:userid userid})]
+    (when result
+      (prn "get-user-by-userid result: " result)
+      (let [kr (keywordize-roles (:roles result))]
+        (assoc result :roles kr)))))
+
+(defn save-user
+  [userid username name email roles]
+  (if-not (get-user-by-userid userid)
+    (let [user-record {:userid userid
+                       :username username
+                       :name name
+                       :email email
+                       :roles roles}]
+      (prn "save-user received " user-record)
+      (far/put-item client-opts
+                    :users
+                    user-record)
+      (prn "save-user returning " user-record)
+      user-record)
+    (throw (Exception. (str "Userid " userid " already exists.")))))

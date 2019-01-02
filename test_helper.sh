@@ -23,6 +23,11 @@ kill_server () {
     if [ $server_pid ]; then echo "killing $server_pid"; kill $server_pid; fi
 }
 
+run_dynamodb() {
+    lein dynamodb-local &
+    dynamodb_local_pid=$!
+}
+
 handle_force_exit () {
     echo -e "\nHandling interrupt"
     kill_server

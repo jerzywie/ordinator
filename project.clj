@@ -146,7 +146,8 @@
                                            org.clojure/clojurescript
                                            org.clojure/core.async
                                            org.clojure/tools.analyzer.jvm]]
-                             [lein-cljsbuild "1.1.1"]]
+                             [lein-cljsbuild "1.1.1"]
+                             [clj-dynamodb-local "0.1.2"]]
 
                    :env {:dev-mode true}
 

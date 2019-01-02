@@ -1,7 +1,8 @@
 (ns ordinator.test-common
   (:require [cheshire.core :as json]
             [clojure.string :as str]
-            [environ.core :refer [env]]))
+            [environ.core :refer [env]]
+            [ordinator.role :as role]))
 
 (defn url+ [& suffix]
   (apply str (format (env :service-url) (env :service-port)) suffix))
@@ -13,3 +14,11 @@
   [resp]
   {:pre [(re-matches #"application/(.+\+)?json.*" (get-in resp [:headers "content-type"]))]}
   (json/parse-string (:body resp) true))
+
+(defn uuid [] (str (java.util.UUID/randomUUID)))
+
+(def user-record
+  {:username "fred"
+   :name "Fred Bloggs"
+   :email "fred@example.com"
+   :roles #{::role/user}})
