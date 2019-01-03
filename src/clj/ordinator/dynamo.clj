@@ -58,18 +58,27 @@
       (let [kr (keywordize-roles (:roles result))]
         (assoc result :roles kr)))))
 
+(defn get-user-by-username
+  "Retrieves a user record by username."
+  [username]
+  (first (far/query client-opts
+                    :users
+                    {:username [:eq  (keyword username)]}
+                    {:index "username-index"})))
+
 (defn save-user
   [userid username name email roles]
-  (if-not (get-user-by-userid userid)
-    (let [user-record {:userid userid
-                       :username username
-                       :name name
-                       :email email
-                       :roles roles}]
-      (prn "save-user received " user-record)
-      (far/put-item client-opts
-                    :users
-                    user-record)
-      (prn "save-user returning " user-record)
-      user-record)
-    (throw (Exception. (str "Userid " userid " already exists.")))))
+  (cond
+    (get-user-by-userid userid) (throw (Exception. (str "Userid " userid " already exists.")))
+    (get-user-by-username username) (throw (Exception. (str "Username " username " already exists.")))
+    :else (let [user-record {:userid userid
+                             :username username
+                             :name name
+                             :email email
+                             :roles roles}]
+            (prn "save-user received " user-record)
+            (far/put-item client-opts
+                          :users
+                          user-record)
+            (prn "save-user returning " user-record)
+            user-record)))
