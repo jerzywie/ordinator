@@ -43,7 +43,7 @@
                  :orderdate orderdate
                  :items items}))
 
-(defn keywordize-roles
+(defn- keywordize-roles
   [roles]
   (->> roles (map keyword) set))
 
@@ -54,7 +54,6 @@
                              :users
                              {:userid userid})]
     (when result
-      (prn "get-user-by-userid result: " result)
       (let [kr (keywordize-roles (:roles result))]
         (assoc result :roles kr)))))
 
@@ -66,19 +65,36 @@
                     {:username [:eq  (keyword username)]}
                     {:index "username-index"})))
 
-(defn save-user
-  [userid username name email roles]
+(defn create-user
+  "Create a new user.
+
+   Constraints:
+   userid and username must be unique."
+  [{:keys [userid username] :as user-record}]
   (cond
     (get-user-by-userid userid) (throw (Exception. (str "Userid " userid " already exists.")))
     (get-user-by-username username) (throw (Exception. (str "Username " username " already exists.")))
-    :else (let [user-record {:userid userid
-                             :username username
-                             :name name
-                             :email email
-                             :roles roles}]
-            (prn "save-user received " user-record)
-            (far/put-item client-opts
-                          :users
-                          user-record)
-            (prn "save-user returning " user-record)
-            user-record)))
+    :else (far/put-item client-opts
+                        :users
+                        user-record))
+  user-record)
+
+(defn update-user
+  "Update user details.
+
+  Constraints:
+  If username is supplied it must be unique.
+  If password is supplied it is encrypted."
+  [{:keys [userid username password] :as update-details}]
+  (let [current-details (get-user-by-userid userid)
+        current-username (:username current-details)]
+    (when-not current-details (throw (Exception. (str "User " userid " does not exist."))))
+    (when username
+      (when-let [username-details (get-user-by-username username)]
+        (if (not= userid (:userid username-details))
+          (throw (Exception. (str "Username " userid " is already in use."))))))
+    (let [updated-record (merge current-details update-details)]
+      (far/put-item client-opts
+                    :users
+                    updated-record)
+      updated-record)))
