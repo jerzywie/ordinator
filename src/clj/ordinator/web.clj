@@ -5,7 +5,8 @@
              [page-frame :refer [page-frame]]
              [order :as order]
              [collation :as col]
-             [user :as user]]
+             [user :as user]
+             [role :as role]]
             [compojure
              [core :refer [defroutes context GET PUT POST DELETE]]
              [route :as route]]
@@ -148,23 +149,23 @@
     "/users/:user" [user :as  req]
     (let [req (assoc req :user user)]
       (-> user-routes
-          (friend/wrap-authorize #{:ordinator.auth/user})
+          (friend/wrap-authorize #{:ordinator.role/user})
           (wrap-same-user user))))
 
    (context
     "/orders" req
-    (friend/wrap-authorize collation-routes #{:ordinator.auth/coordinator}))
+    (friend/wrap-authorize collation-routes #{:ordinator.role/coordinator}))
 
    (GET "/catalogue"
         [] (get-catalogue))
 
    (friend/wrap-authorize
     (POST "/users" req
-          (create-user req)) #{:ordinator.auth/admin})
+          (create-user req)) #{:ordinator.role/admin})
 
    (friend/wrap-authorize
     (PUT "/catalogue"
-         [] (update-catalogue)) #{:ordinator.auth/admin}))
+         [] (update-catalogue)) #{:ordinator.role/admin}))
 
   (route/resources "/")
 
