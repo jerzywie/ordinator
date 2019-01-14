@@ -6,7 +6,10 @@ TIMEOUT=30
 if [ "$1" != "wait" ]
 then
     export FILTER=${1:-acceptance}
-    run_test "ordinator.acceptance" $TIMEOUT $FILTER
+    lein dynamodb-local &
+    trap "pkill -f dynamodb-local" EXIT
+    wait_for_port 8000 15
+    run_test "ordinator.acceptance*" $TIMEOUT $FILTER
 else
-    lein run
+    lein dynamodb-local run
 fi

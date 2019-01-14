@@ -1,4 +1,4 @@
-(ns ordinator.unit.persistence
+(ns ordinator.acceptance.persistence
   (:require [ordinator.dynamo :refer :all]
             [ordinator.test-common :as test]
             [midje.sweet :refer :all]

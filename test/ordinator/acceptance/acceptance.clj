@@ -1,4 +1,4 @@
-(ns ordinator.acceptance
+(ns ordinator.acceptance.acceptance
   (:require [ordinator.test-common :refer :all]
             [clj-http.client :as http]
             [environ.core :refer [env]]
