@@ -94,15 +94,26 @@
     {:status 201
      :body user}))
 
+(defn update-user
+  [{:keys [route-params body-params]}]
+  (let [user (user/update-user (merge route-params body-params))]
+    {:status 200
+     :body user}))
+
 (defroutes user-routes
   (GET "/orders/:orderdate"
-       [user orderdate]
-       (get-user-order user orderdate))
+       [userid orderdate]
+       (get-user-order userid orderdate))
 
   (PUT "/orders/:orderdate"
-       [user :as req]
+       [userid :as req]
        (prn "PUT users/orders req" req)
-       (save-user-order req)))
+       (save-user-order req))
+
+  (PUT "/"
+       [userid :as req]
+       (prn "Update user req " req)
+       (update-user req)))
 
 (defroutes collation-routes
     (GET "/:orderdate"
@@ -120,7 +131,7 @@
     (PUT "/catalogue"
          [] (update-catalogue))
 
-    (POST "/usermaint" req
+    (POST "/users" req
           (create-user req)))
 
 (defroutes routes
@@ -146,26 +157,22 @@
            request (json-auth/handle-session request))
 
    (context
-    "/users/:user" [user :as  req]
-    (let [req (assoc req :user user)]
+    "/users/:userid" [userid :as  req]
+    (let [req (assoc req :userid userid)]
       (-> user-routes
           (friend/wrap-authorize #{:ordinator.role/user})
-          (wrap-same-user user))))
+          (wrap-same-user userid))))
 
    (context
     "/orders" req
     (friend/wrap-authorize collation-routes #{:ordinator.role/coordinator}))
 
+   (context
+    "/" req
+    (friend/wrap-authorize admin-routes #{:ordinator.role/admin}))
+
    (GET "/catalogue"
-        [] (get-catalogue))
-
-   (friend/wrap-authorize
-    (POST "/users" req
-          (create-user req)) #{:ordinator.role/admin})
-
-   (friend/wrap-authorize
-    (PUT "/catalogue"
-         [] (update-catalogue)) #{:ordinator.role/admin}))
+        [] (get-catalogue)))
 
   (route/resources "/")
 
