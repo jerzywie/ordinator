@@ -1,7 +1,7 @@
 (ns cljs.ordinator.view
   (:require [petrol.core :refer [send! forward]]
             [cljs.pprint :refer [pprint]]
-            [ordinator.utils :as utils]
+            [ordinator.utils :as u]
             [cljs.ordinator.routes :refer [href-for]]
             [cljs.ordinator.messages :as m]
             [cljs.ordinator.login.messages :as login-messages :refer [DoLogout]]
@@ -36,9 +36,12 @@
      [:span.navbar-brand.site-title "Albany ordinator"]]
     [:div.collapse.navbar-collapse
      [:ul.nav.navbar-nav
-      [:li [:a {:href (href-for :order-page)} "View your order"]]
-      [:li [:a {:href (href-for :about-page)} "About"]]
-      [:li [:a {:href (href-for :allorders-page)} "View collated order"]]
+      (when (u/logged-in? app)
+        [:li [:a {:href (href-for :order-page)} "View your order"]])
+      (when (u/logged-in? app)
+        [:li [:a {:href (href-for :about-page)} "About"]])
+      (when (u/has-role? app "ordinator.role/coordinator")
+        [:li [:a {:href (href-for :allorders-page)} "View collated order"]])
       ;[:li [:a {:href (href-for :login-page)} "Login"]]
       ]
      [login-view/user-status-widget (forward m/->Login ui-channel) (:login app)]]]])

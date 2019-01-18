@@ -64,9 +64,13 @@
         vat-amount (* price (/ vatrate 100))]
     (+ price vat-amount)))
 
+(defn logged-in?
+  [app]
+  (get-in app [:login :loggedin]))
+
 (defn has-role?
   [app role]
-  (when (get-in app [:login :loggedin])
+  (when (logged-in? app)
     (some #{role} (get-in app [:login :user :roles]))))
 
 (defn cost-to-user
