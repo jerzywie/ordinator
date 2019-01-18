@@ -57,7 +57,7 @@
             [lein-ring "0.8.12"]
             [lein-asset-minifier "0.2.3"]]
 
-  :source-paths ["src/clj" "src/cljs"]
+  :source-paths ["src/clj" "src/cljs" "src/cljc"]
 
   :env {:auto-reload "true"
         :environment-name "poke"
@@ -93,7 +93,7 @@
 
   :uberjar-name "ordinator.jar"
 
-  :cljsbuild {:builds {:app {:source-paths ["src/cljs"]
+  :cljsbuild {:builds {:app {:source-paths ["src/cljs" "src/cljc"]
                              :figwheel {:on-jsload "cljs.ordinator.core/reload-hook"}
                              :compiler {:output-to "resources/public/js/app.js"
                                         :output-dir "resources/public/js/out"

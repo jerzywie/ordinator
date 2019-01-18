@@ -1,5 +1,6 @@
 (ns ordinator.utils
-  (:require [reagent.core :as reagent]
+  (:require [ordinator.role :as role]
+            [reagent.core :as reagent]
             [cljs.core.async :refer [chan <! close!]]
             [cljs-http.client :as http]
             [clojure.string :as s]
@@ -71,7 +72,7 @@
 (defn has-role?
   [app role]
   (when (logged-in? app)
-    (some #{role} (get-in app [:login :user :roles]))))
+    (role/has-role? (get-in app [:login :user :roles]) role)))
 
 (defn cost-to-user
   [user-quantity units-per-pack pack-price vat]
