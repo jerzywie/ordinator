@@ -21,4 +21,5 @@
   {:username "fred"
    :name "Fred Bloggs"
    :email "fred@example.com"
-   :roles #{::role/user}})
+   :roles #{::role/user}
+   :active? true})

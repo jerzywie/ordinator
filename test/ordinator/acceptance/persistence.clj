@@ -5,8 +5,10 @@
             [taoensso.faraday :as far]))
 
 (defn- make-unique-user
-  []
-  (assoc test/user-record :userid (test/uuid) :username (test/uuid)))
+  ([username]
+   (assoc test/user-record :userid (test/uuid) :username username :active? true))
+  ([]
+   (make-unique-user (test/uuid))))
 
 (defn delete-table
   []
@@ -38,7 +40,7 @@
                {:keys [userid username name email roles]} user-data
                result {:userid userid :username username}]
            (create-user user-data)
-           (get-user-by-username username) => result))
+           (get-user-by-username username) => (contains result)))
 
    (fact "create-user throws exception if the userid is not unique"
          (let [user-data (make-unique-user)
@@ -74,4 +76,13 @@
                user2-result (create-user user2)
                user2-update {:userid (:userid user2) :username (:username user1)}]
            (update-user user2-update) => (throws Exception)))
+
+   (fact "get-active-users gets only active users"
+         (let [user1 (make-unique-user "fred")
+               user2 (assoc (make-unique-user "joe") :active? false)
+               user3 (make-unique-user "kate")
+               user1-result (create-user user1)
+               user2-result (create-user user2)
+               user3-result (create-user user3)]
+           (set (map :username (get-active-users))) => (set '("fred" "kate"))))
    ))

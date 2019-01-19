@@ -98,3 +98,11 @@
                     :users
                     updated-record)
       updated-record)))
+
+(defn get-active-users
+  "Return all users marked as active."
+  []
+  (far/scan client-opts
+            :users
+            {:attr-conds {:active? [:eq true]}
+                                   :return [:userid :username]}))
