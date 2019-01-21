@@ -25,13 +25,8 @@ exit_if_fail () {
 
 echo "Running unit tests"
 
-lein midje :filter unit
+lein midje ordinator.unit.*
 exit_if_fail Unit
-
-echo "Running persistence layer tests"
-
-./persistence
-exit_if_fail Persistence
 
 echo "Running integration tests"
 
