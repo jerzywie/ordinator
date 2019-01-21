@@ -3,12 +3,18 @@
             [cemerick.friend.credentials :as creds]))
 
 (defn create-user
-  [{:keys [username password] :as user-record}]
-  (let [userid (str (java.util.UUID/randomUUID))
-        hash-password (creds/hash-bcrypt password)
-        complete-record (assoc user-record :userid userid :password hash-password :active? true)]
-    (prn "Creating user. user-record: " complete-record)
-    (db/create-user complete-record)))
+  [{:keys [username name password email roles] :as user-record}]
+  (cond (nil? username) (throw (Exception. "Username must be supplied."))
+        (nil? name) (throw (Exception. "Name must be supplied."))
+        (nil? password) (throw (Exception. "Password must be supplied."))
+        (nil? email) (throw (Exception. "Email must be supplied."))
+        (nil? roles) (throw (Exception. "Roles must be supplied"))
+        :else (let [userid (str (java.util.UUID/randomUUID))
+                    hash-password (creds/hash-bcrypt password)
+                    complete-record (assoc user-record :userid userid
+                                           :password hash-password
+                                           :active? true)]
+                (db/create-user complete-record))))
 
 (defn find-user-by-username
   [username]
@@ -20,8 +26,16 @@
   Constraints:
   If username is supplied it must be unique.
   If password is supplied it is encrypted."
-  [{:keys [userid password] :as update-details}]
-  (cond
-    (nil? userid) (throw (Exception. "Userid must be supplied."))
-    :else ((when password (assoc update-details :password (creds/hash-bcrypt password)))
-           (db/update-user update-details))))
+  [userid {:keys [password] :as update-details}]
+  (let [update-details (if password (assoc update-details :password (creds/hash-bcrypt password)) update-details)]
+   (db/update-user (assoc update-details :userid userid))))
+
+(defn disable-user
+  "Set active? flag to false"
+  [userid]
+  (db/update-user {:userid userid :active? false}))
+
+(defn get-active-users
+  "Get all active users"
+  []
+  (db/get-active-users))

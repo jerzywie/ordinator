@@ -15,7 +15,7 @@
   (far/delete-table client-opts :users))
 
 (fact-group
- :persistence
+ :acceptance
 
  (with-state-changes [(before :facts (do (ensure-tables)))
                       (after :facts (do (delete-table)
