@@ -79,7 +79,11 @@
         :service-url "http://localhost:%s"
         :shutdown-timeout-millis "5000"
         :start-timeout-seconds "120"
-        :threads "254"}
+        :threads "254"
+
+        :dev-access-key "dev-ordinator-aws-key"
+        :dev-secret-key "dev-ordinator-aws-secret"}
+
 
   :lein-release {:deploy-via :shell
                  :shell ["lein" "do" "clean," "uberjar," "pom," "rpm"]}
@@ -179,7 +183,7 @@
 
   :rpm {:name "ordinator"
         :summary "RPM for Ordinator service"
-        :copyright "MixRadio 2015"
+        :copyright "Razzydo 2019"
         :preinstall {:scriptFile "scripts/rpm/preinstall.sh"}
         :postinstall {:scriptFile "scripts/rpm/postinstall.sh"}
         :preremove {:scriptFile "scripts/rpm/preremove.sh"}

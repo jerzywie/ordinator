@@ -1,16 +1,12 @@
 (ns ordinator.dynamo
-  (:require [taoensso.faraday :as far]))
+  (:require [taoensso.faraday :as far]
+            [environ.core :refer [env]]))
 
-(def client-opts
-  {;;; For DDB Local just use some random strings here, otherwise include your
-   ;;; production IAM keys:
-   :access-key "dummy-ordinator-aws-key"
-   :secret-key "dummy-ordinator-aws-secret"
-
-   :endpoint "http://localhost:8000"
-   :region "a-region"
-   ;:endpoint "http://dynamodb.eu-west-1.amazonaws.com"
-  })
+(def client-opts (let [dev-access-key (env :dev-access-key)
+                       dev-secret-key (env :dev-secret-key)]
+                   (merge {:endpoint (env :dynamodb-endpoint "http://localhost:8000")}
+                          (when (and dev-access-key dev-secret-key)
+                            {:access-key dev-access-key :secret-key dev-secret-key}))))
 
 (defn ensure-tables
   []
