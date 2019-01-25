@@ -19,7 +19,7 @@
                     [:userid :s]
                     {:gsindexes [{:name "username-index"
                                   :hash-keydef [:username :s]
-                                  :projection :keys-only
+                                  :projection [:password :roles]
                                   :throughput {:read 1 :write 1}}]
                      :throughput {:read 1 :write 1}
                      :block? true}))
@@ -43,23 +43,28 @@
   [roles]
   (->> roles (map keyword) set))
 
+(defn- ensure-keywords
+  [result]
+  (when result
+    (let [kr (keywordize-roles (:roles result))]
+      (assoc result :roles kr))))
+
 (defn get-user-by-userid
   "Retrieves a user record by userid."
   [userid]
   (let [result (far/get-item client-opts
                              :users
                              {:userid userid})]
-    (when result
-      (let [kr (keywordize-roles (:roles result))]
-        (assoc result :roles kr)))))
+    (ensure-keywords result)))
 
 (defn get-user-by-username
   "Retrieves a user record by username."
   [username]
-  (first (far/query client-opts
-                    :users
-                    {:username [:eq  (keyword username)]}
-                    {:index "username-index"})))
+  (let [result (first (far/query client-opts
+                                 :users
+                                 {:username [:eq  (keyword username)]}
+                                 {:index "username-index"}))]
+    (ensure-keywords result)))
 
 (defn create-user
   "Create a new user.

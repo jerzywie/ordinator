@@ -1,12 +1,14 @@
 (ns ordinator.acceptance.persistence
-  (:require [ordinator.dynamo :refer :all]
-            [ordinator.test-common :as test]
+  (:require [ordinator
+             [dynamo :refer :all]
+             [test-common :as test]
+             [role :as role]]
             [midje.sweet :refer :all]
             [taoensso.faraday :as far]))
 
 (defn- make-unique-user
   ([username]
-   (assoc test/user-record :userid (test/uuid) :username username :active? true))
+   (assoc test/user-record :userid (test/uuid) :username username :active? true :password "pwd"))
   ([]
    (make-unique-user (test/uuid))))
 
@@ -23,10 +25,9 @@
 
    (fact "can retrieve a previously created user-record by id"
          (let [user-data (make-unique-user)
-               {:keys [userid username name email roles] :as result} user-data]
-           (create-user user-data)
+               {:keys [userid username name email roles] :as result} user-data
+               cur (create-user user-data)]
            (get-user-by-userid userid) => user-data))
-
 
    (fact "handling of non-existent records"
          (let [none-such (test/uuid)]
@@ -36,11 +37,15 @@
                  (get-user-by-username none-such) => nil)))
 
    (fact "can retrieve a previously created user-record by username"
-         (let [user-data (make-unique-user)
-               {:keys [userid username name email roles]} user-data
-               result {:userid userid :username username}]
-           (create-user user-data)
-           (get-user-by-username username) => (contains result)))
+         (let [create-user-data (make-unique-user)
+               {:keys [userid username name email roles]} create-user-data
+               name-and-id [username userid]
+               expect {:userid userid :username username :password ..anything.. :roles ..anything..}]
+           (create-user create-user-data)
+           (let [user-data-result (get-user-by-username username)]
+             (keys expect)  => (contains (keys user-data-result) :in-any-order)
+             (let [{:keys [username userid]} user-data-result]
+               [username userid] => name-and-id))))
 
    (fact "create-user throws exception if the userid is not unique"
          (let [user-data (make-unique-user)
@@ -85,4 +90,41 @@
                user2-result (create-user user2)
                user3-result (create-user user3)]
            (set (map :username (get-active-users))) => (set '("fred" "kate"))))
+
+   (defn- keyword-roles?
+     [{:keys [roles]}]
+     (prn "keyword-roles? " roles)
+     (->> roles
+          (map keyword?)
+          (some false?)))
+
+   (defn report
+     [msg fn]
+     (let [result (fn)]
+       (prn "report " msg ": " result)
+       result))
+
+   (fact "roles are returned as keywords in all cases"
+         (let [user-data (assoc (make-unique-user) :roles #{::role/user ::role/admin})
+               create-user-response (create-user user-data)
+               {:keys [username userid]} create-user-response
+               user-by-id-response (get-user-by-userid userid)
+               user-by-name-response (get-user-by-username username)
+               update-user-response (update-user {:userid userid :username "new-name"})
+               update-user-roles-response (update-user {:userid userid :roles #{::role/coordinator}})]
+
+           (fact "create-user"
+                 (keyword-roles? create-user-response) => nil)
+
+           (fact "get-user-by-id"
+                 (keyword-roles? user-by-id-response) => nil)
+
+           (fact "get-user-by-username"
+                 (keyword-roles? user-by-name-response) => nil)
+
+           (fact "update-user (not updating :roles"
+                 (keyword-roles? update-user-response) => nil)
+
+           (fact "update-user (when :roles updated"
+                 (keyword-roles? update-user-roles-response) => nil)))
    ))

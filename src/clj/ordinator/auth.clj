@@ -1,5 +1,7 @@
 (ns ordinator.auth
-  (:require [ordinator.role :as role]
+  (:require [ordinator
+             [role :as role]
+             [dynamo :as db]]
             [cemerick.friend :as friend]
             [cemerick.friend
              [workflows :as workflows]
@@ -27,9 +29,9 @@
 
 (defn user-list
   []
-  (let [ord-users (rest users)
-        names (keys ord-users)
-        ids (map :userid (vals ord-users))]
+  (let [users (db/get-active-users)
+        ids (map :userid users)
+        names (map :username users)]
     (zipmap ids names)))
 
 (defn unauthenticated-handler [_]
@@ -51,7 +53,12 @@
                         :workflows [(json-auth/json-login
                                      :login-uri "/v1/login"
                                      :login-failure-handler json-auth/login-failed
-                                     :credential-fn (partial creds/bcrypt-credential-fn users))]}))
+                                     :credential-fn (fn [{:keys [username] :as login-data}]
+                                                      (let [user-rec (db/get-user-by-username username)
+                                                            user-creds {username user-rec}]
+                                                        (creds/bcrypt-credential-fn user-creds login-data)
+                                                        ;(creds/bcrypt-credential-fn users login-data)
+                                                        )))]}))
 
 (defn wrap-same-user
   [handler userid]

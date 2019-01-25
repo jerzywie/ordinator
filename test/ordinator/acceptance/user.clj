@@ -135,7 +135,7 @@
            (fact "all users active on creation"
                  (count (get-active-users)) => num-users)
 
-           (fact "disabled users are takein into account"
+           (fact "disabled users are taken into account"
                  (doall (map disable-user (take num-to-disable userids)))
                  (count (get-active-users)) => (- num-users num-to-disable))))
    ))
