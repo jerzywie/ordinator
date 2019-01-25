@@ -93,7 +93,6 @@
 
    (defn- keyword-roles?
      [{:keys [roles]}]
-     (prn "keyword-roles? " roles)
      (->> roles
           (map keyword?)
           (some false?)))
@@ -122,9 +121,9 @@
            (fact "get-user-by-username"
                  (keyword-roles? user-by-name-response) => nil)
 
-           (fact "update-user (not updating :roles"
+           (fact "update-user (not updating :roles)"
                  (keyword-roles? update-user-response) => nil)
 
-           (fact "update-user (when :roles updated"
+           (fact "update-user (when :roles updated)"
                  (keyword-roles? update-user-roles-response) => nil)))
    ))
