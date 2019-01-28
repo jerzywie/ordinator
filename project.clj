@@ -1,4 +1,4 @@
-(defproject ordinator "0.1.0"
+(defproject ordinator "0.1.1-SNAPSHOT"
   :description "Ordinator service"
 
   :dependencies [[org.clojure/core.cache "0.6.4"]
