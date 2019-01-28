@@ -2,15 +2,16 @@
   (:require [ordinator
              [dynamo :refer :all]
              [test-common :as test]
-             [role :as role]]
+             [role :as role]
+             [user :refer [user-id]]]
             [midje.sweet :refer :all]
             [taoensso.faraday :as far]))
 
 (defn- make-unique-user
   ([username]
-   (assoc test/user-record :userid (test/uuid) :username username :active? true :password "pwd"))
+   (assoc test/user-record :userid (user-id) :username username :active? true :password "pwd"))
   ([]
-   (make-unique-user (test/uuid))))
+   (make-unique-user (user-id))))
 
 (defn delete-table
   []
@@ -30,7 +31,7 @@
            (get-user-by-userid userid) => user-data))
 
    (fact "handling of non-existent records"
-         (let [none-such (test/uuid)]
+         (let [none-such (user-id)]
            (fact "non-existent userid returns nil"
                  (get-user-by-userid none-such) => nil)
            (fact "non-existent username returns nil"
@@ -54,9 +55,9 @@
            (create-user user-data) => (throws Exception)))
 
    (fact "create-user throws exception if the username is not unique"
-         (let [username (str "user-" (test/uuid))
-               userid1 (test/uuid)
-               userid2 (test/uuid)
+         (let [username (str "user-" (user-id))
+               userid1 (user-id)
+               userid2 (user-id)
                user1 (assoc test/user-record :userid userid1 :username username)
                user2 (assoc test/user-record :userid userid2 :username username)]
            (create-user user1) => (assoc test/user-record :userid userid1 :username username)
@@ -65,7 +66,7 @@
    (fact "update-user allows update of existing user record"
          (let [original-details (create-user (make-unique-user))
                userid (:userid original-details)
-               update-details {:email "wasfred@example.com" :userid userid :username (test/uuid)}]
+               update-details {:email "wasfred@example.com" :userid userid :username (user-id)}]
            (update-user update-details) => (merge original-details update-details)))
 
    (fact "user must already exist in order to be updated"
