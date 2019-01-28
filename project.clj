@@ -45,7 +45,8 @@
                  [org.marianoguerra/friend-json-workflow "0.2.1"]
                  [com.taoensso/faraday "1.7.1"]
                  [bidi "1.24.0"]
-                 [kibu/pushy "0.3.6"]]
+                 [kibu/pushy "0.3.6"]
+                 [re-rand "0.1.0"]]
 
   :exclusions [commons-logging
                log4j

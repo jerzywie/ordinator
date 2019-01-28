@@ -1,6 +1,11 @@
 (ns ordinator.user
   (:require [ordinator.dynamo :as db]
-            [cemerick.friend.credentials :as creds]))
+            [cemerick.friend.credentials :as creds]
+            [re-rand :refer [re-rand]]))
+
+(defn user-id
+  []
+  (re-rand #"[a-z0-9]{8}"))
 
 (defn create-user
   [{:keys [username name password email roles] :as user-record}]
@@ -9,7 +14,7 @@
         (nil? password) (throw (Exception. "Password must be supplied."))
         (nil? email) (throw (Exception. "Email must be supplied."))
         (nil? roles) (throw (Exception. "Roles must be supplied"))
-        :else (let [userid (str (java.util.UUID/randomUUID))
+        :else (let [userid (user-id)
                     hash-password (creds/hash-bcrypt password)
                     complete-record (assoc user-record :userid userid
                                            :password hash-password
