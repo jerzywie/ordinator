@@ -20,6 +20,7 @@ dev-resources/
 data-representations.json
 appstate.json
 resources/public/css/site-unused.css
+resources/public/js/app.js
 *.min.css
 .#*
 checkouts/
