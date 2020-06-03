@@ -1,6 +1,7 @@
 (ns ordinator.dynamo
   (:require [taoensso.faraday :as far]
-            [environ.core :refer [env]]))
+            [environ.core :refer [env]]
+            [clojure.tools.logging :as log]))
 
 (def client-opts (let [dev-access-key (env :dev-access-key)
                        dev-secret-key (env :dev-secret-key)]
@@ -10,6 +11,7 @@
 
 (defn ensure-tables
   []
+  (log/info "client-opts: access-key : " (:access-key client-opts))
   (far/ensure-table client-opts :orders
                     [:userid :s]
                     {:range-keydef [:orderdate :s]

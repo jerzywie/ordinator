@@ -24,3 +24,5 @@ resources/public/css/site-unused.css
 .#*
 checkouts/
 .DS_Store
+ordinator/
+pom.xml
